@@ -81,6 +81,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Box.cpp" />
     <ClCompile Include="Descriptor_Matching.cpp" />
     <ClCompile Include="Homography.cpp" />
     <ClCompile Include="Keypoint_Descriptor.cpp" />
@@ -88,6 +89,7 @@
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Box.h" />
     <ClInclude Include="Descriptor_Matching.h" />
     <ClInclude Include="Homography.h" />
     <ClInclude Include="Keypoint_Descriptor.h" />

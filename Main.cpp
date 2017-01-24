@@ -63,18 +63,18 @@ int main(int argc, char**argv){
 	Descriptor_Matching(model_3, scene, descriptor_model_3, descriptor_scene, keypoints_model_3, keypoints_scene, matcher_3, filtered_match_3, all_match_3);
 	
 
-	Homography(model_1, scene, keypoints_model_1, keypoints_scene, filtered_match_1);
+	//Homography(model_1, scene, keypoints_model_1, keypoints_scene, filtered_match_1);
 	
-	Homography(model_2, scene, keypoints_model_2, keypoints_scene, filtered_match_2);
+	//Homography(model_2, scene, keypoints_model_2, keypoints_scene, filtered_match_2);
 
-	Homography(model_3, scene, keypoints_model_3, keypoints_scene, filtered_match_3);
-
-	/*
-	Commentato per la multiomografia
+	//Homography(model_3, scene, keypoints_model_3, keypoints_scene, filtered_match_3);
+	
+	
+	
 	std::vector<cv::Mat> models = { model_1, model_2, model_3 };
 	std::vector<std::vector<cv::DMatch>> filtered_matches = { filtered_match_1, filtered_match_2, filtered_match_3 };
 	std::vector<std::vector<cv::KeyPoint>> keypoints_models = { keypoints_model_1, keypoints_model_2, keypoints_model_3 };
 	
-	Multi_Homography(scene, keypoints_scene, models, filtered_matches, keypoints_models);*/
+	Multi_Homography(scene, keypoints_scene, models, filtered_matches, keypoints_models);
 
 }
