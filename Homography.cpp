@@ -1,8 +1,7 @@
 #include "Homography.h"
 #include "Box.h"
 
-void Homography(cv::Mat model, cv::Mat scene, std::vector<cv::KeyPoint> keypoints_model,
-	std::vector<cv::KeyPoint> keypoints_scene, std::vector<cv::DMatch> filtered_match){
+void Homography(cv::Mat model, cv::Mat scene, std::vector<cv::KeyPoint> keypoints_model,std::vector<cv::KeyPoint> keypoints_scene, std::vector<cv::DMatch> filtered_match){
 
 	std::vector<cv::Point2d> model_points;
 
@@ -55,8 +54,8 @@ void Multi_Homography(cv::Mat scene, std::vector<cv::KeyPoint> keypoints_scene, 
 	std::vector<cv::Point2d> model_points;
 	std::vector<cv::Point2d> scene_points;
 	cv::Mat bounding_box;
-	std::vector<Box> box_obj_corners(3); 
-	std::vector<Box> box_scene_corners(3);
+	std::vector<Box> box_obj_corners(filtered_matches.size());
+	std::vector<Box> box_scene_corners(filtered_matches.size());
 
 	for (int i = 0; i < filtered_matches.size(); i++){
 		std::vector<cv::DMatch> current_filterd = filtered_matches[i];
@@ -73,9 +72,9 @@ void Multi_Homography(cv::Mat scene, std::vector<cv::KeyPoint> keypoints_scene, 
 		//estimate homography using ransac
 		cv::Mat homography = cv::findHomography(model_points, scene_points, CV_RANSAC);
 		std::cout << "Homography estimated" << std::endl;
-		
 		scene.copyTo(bounding_box);
-
+		model_points.clear();
+		scene_points.clear();
 
 
 		//compute scene bounding box corner using the homography computed right now
@@ -84,19 +83,30 @@ void Multi_Homography(cv::Mat scene, std::vector<cv::KeyPoint> keypoints_scene, 
 		box_obj_corners[i].point1 = cv::Point(current_model.cols, 0);
 		box_obj_corners[i].point2 = cv::Point(current_model.cols, current_model.rows);
 		box_obj_corners[i].point3 = cv::Point(0, current_model.rows);
+
+		std::vector<cv::Point2f> result(4);
+		result[0] = (box_obj_corners[i].point0);
+		result[1] = (box_obj_corners[i].point1);
+		result[2] = (box_obj_corners[i].point2);
+		result[3] = (box_obj_corners[i].point3);
+
+		std::vector<cv::Point2f> box_scene_corners_result(4);
 		
-		perspectiveTransform(box_obj_corners[i].toVector(), box_scene_corners[i].toVector(), homography);
+		perspectiveTransform(result, box_scene_corners_result, homography);
 
-
+		box_scene_corners[i].point0 = box_scene_corners_result[0];
+		box_scene_corners[i].point1 = box_scene_corners_result[1];
+		box_scene_corners[i].point2 = box_scene_corners_result[2];
+		box_scene_corners[i].point3 = box_scene_corners_result[3];
 		
 
 	}
-	
+
 	//draw the bounding box
-	box_scene_corners[0].drawYourself(bounding_box, cv::Scalar(0,255,0),6);
-	box_scene_corners[1].drawYourself(bounding_box, cv::Scalar(255, 0, 0), 6);
-	box_scene_corners[2].drawYourself(bounding_box, cv::Scalar(255, 255, 255), 6);
-		
+	for (int i = 0; i < filtered_matches.size(); i++){
+		box_scene_corners[i].drawYourself(bounding_box, cv::Scalar(100*i, 255/(i+1), 255-(i*50)), 6);
+	}
+
 	cv::namedWindow("Bounding box", cv::WINDOW_NORMAL);
 	cv::imshow("Bounding box", bounding_box);
 	cv::waitKey();
