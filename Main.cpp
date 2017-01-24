@@ -11,11 +11,11 @@ int main(int argc, char**argv){
 #endif
 
 	
-	cv::Mat model_1 = cv::imread("C:/Users/arman/Desktop/Progetto_CV/models/0.jpg");
-	cv::Mat model_2 = cv::imread("C:/Users/arman/Desktop/Progetto_CV/models/26.jpg");
-	cv::Mat model_3 = cv::imread("C:/Users/arman/Desktop/Progetto_CV/models/25.jpg");
-	cv::Mat model_4 = cv::imread("C:/Users/arman/Desktop/Progetto_CV/models/11.jpg");
-	cv::Mat scene = cv::imread("C:/Users/arman/Desktop/Progetto_CV/scenes/e4.png");
+	cv::Mat model_1 = cv::imread("../models/0.jpg");
+	cv::Mat model_2 = cv::imread("../models/26.jpg");
+	cv::Mat model_3 = cv::imread("../models/25.jpg");
+	cv::Mat model_4 = cv::imread("../models/11.jpg");
+	cv::Mat scene = cv::imread("../scenes/e4.png");
 	if (model_1.data == NULL || scene.data == NULL){
 		std::cout << "Unable to load image..." << std::endl;
 		std::exit(1);
