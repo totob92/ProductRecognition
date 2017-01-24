@@ -6,6 +6,8 @@
 
 int main(int argc, char**argv){
 
+//-------------------------TASK A--------------------------------------------------
+	/*
 #if (defined(CV_VERSION_EPOCH) && CV_VERSION_EPOCH == 2)
 	cv::initModule_nonfree();
 #endif
@@ -81,5 +83,20 @@ int main(int argc, char**argv){
 	std::vector<std::vector<cv::KeyPoint>> keypoints_models = { keypoints_model_1, keypoints_model_2, keypoints_model_3, keypoints_model_4 };
 	
 	Multi_Homography(scene, keypoints_scene, models, filtered_matches, keypoints_models);
+
+	*/
+
+//-------------------------TASK B--------------------------------------------------
+
+	IplImage* src = cvLoadImage("../models/11.jpg");
+	IplImage* dst = cvCreateImage(cvGetSize(src), 8, 1);
+
+	cvNamedWindow("Source", 1);
+	cvShowImage("Source", src);
+
+	cvCanny(src, dst, 50, 200, 3); 
+
+	cvNamedWindow("After Canny", 1);
+	cvShowImage("After Canny", dst);
 
 }
