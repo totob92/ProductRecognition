@@ -4,6 +4,8 @@
 #include "Homography.h"
 #define VISUALIZE_EVERYTHING = true; 
 
+
+
 int main(int argc, char**argv){
 
 //-------------------------TASK A--------------------------------------------------
@@ -88,15 +90,68 @@ int main(int argc, char**argv){
 
 //-------------------------TASK B--------------------------------------------------
 
-	IplImage* src = cvLoadImage("../models/11.jpg");
-	IplImage* dst = cvCreateImage(cvGetSize(src), 8, 1);
+#if (defined(CV_VERSION_EPOCH) && CV_VERSION_EPOCH == 2)
+	cv::initModule_nonfree();
+#endif
+	
+	cv::Mat src = cv::imread("../models/0.jpg");
+	cv::Mat dst;
+	cv::RNG rng(12345);
+	std::vector<std::vector<cv::Point>> contours;
+	std::vector<cv::Vec4i> hierarchy;
 
-	cvNamedWindow("Source", 1);
-	cvShowImage("Source", src);
+	cv::namedWindow("Source", cv::WINDOW_AUTOSIZE);
+	cv::imshow("Source", src);
 
-	cvCanny(src, dst, 50, 200, 3); 
+	Canny(src, dst, 50, 200, 3); 
 
-	cvNamedWindow("After Canny", 1);
-	cvShowImage("After Canny", dst);
+	cv::namedWindow("Canny", cv::WINDOW_NORMAL);
+	cv::imshow("Canny", dst);
+
+
+	// trova i contorni
+	cv::findContours(dst, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
+	
+	//trova i momenti
+	std::vector<cv::Moments> moments(contours.size());
+	
+	for (int i = 0; i < contours.size(); i++){
+		moments[i] = cv::moments(contours[i], false);
+	}
+
+	//trova per ogni punto del contorno il baricentro
+	std::vector<cv::Point2f> mc(contours.size());
+	for (int i = 0; i < contours.size(); i++)
+	{
+		mc[i] = cv::Point2f(moments[i].m10 / moments[i].m00, moments[i].m01 / moments[i].m00);
+	}
+	 
+	// disegna i contorni
+	cv::Mat drawing = cv::Mat::zeros(dst.size(), CV_8UC3);
+	for (int i = 0; i< contours.size(); i++)
+	{
+		cv::Scalar color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+		drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0, cv::Point());
+		
+		//disegna i baricentri
+		circle(drawing, mc[i], 7, color, -1, 8, 0);
+		
+
+	//	putText(drawing, "center", mc[i], cv::FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2);
+	}
+
+	cv::namedWindow("conoturs", cv::WINDOW_NORMAL);
+	cv::imshow("conoturs", drawing);
+
+	printf("\t Info: Area and Contour Length \n");
+	for (size_t i = 0; i< contours.size(); i++)
+	{
+		printf(" * Contour[%d] - Area (M_00) = %.2f - Area OpenCV: %.2f - Length: %.2f \n", (int)i, moments[i].m00, contourArea(contours[i]), arcLength(contours[i], true));
+		cv::Scalar color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+		drawContours(drawing, contours, (int)i, color, 2, 8, hierarchy, 0,cv::Point());
+		
+	}
+
+	cvWaitKey();
 
 }
