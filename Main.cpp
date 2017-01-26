@@ -94,7 +94,7 @@ int main(int argc, char**argv){
 	cv::initModule_nonfree();
 #endif
 	
-	cv::Mat src = cv::imread("../models/0.jpg");
+	cv::Mat src = cv::imread("../scene.png");
 	cv::Mat dst;
 	cv::RNG rng(12345);
 	std::vector<std::vector<cv::Point>> contours;
@@ -148,7 +148,7 @@ int main(int argc, char**argv){
 	printf("\t Info: Area and Contour Length \n");
 	for (size_t i = 0; i< contours.size(); i++)
 	{
-		printf(" * Contour[%d] - Area (M_00) = %.2f - Area OpenCV: %.2f - Length: %.2f \n", (int)i, moments[i].m00, contourArea(contours[i]), arcLength(contours[i], true));
+		//printf(" * Contour[%d] - Area (M_00) = %.2f - Area OpenCV: %.2f - Length: %.2f \n", (int)i, moments[i].m00, contourArea(contours[i]), arcLength(contours[i], true));
 		cv::Scalar color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
 		drawContours(drawing, contours, (int)i, color, 2, 8, hierarchy, 0,cv::Point());
 		
@@ -189,6 +189,21 @@ int main(int argc, char**argv){
 	
 
 	//------------------------------------------------------------------------
+
+	//-------------------------------------test pasquale----------------------
+	//stampo le rette che collegano il baricentro con i punti dei bordi
+
+	cv::Mat rette_result = cv::Mat::zeros(drawing.size(), CV_8UC3);
+
+	for (int i = 0; i < contours.size(); i++)
+	{
+		for (int j = 0; j < contours[i].size(); j++){
+			cv::Point2f temp = contours[i].at(j);
+			cv::line(rette_result, mc[i], temp, cv::Scalar(0, 255, 0), 6);
+		}
+	}
+	cv::imshow("rette",rette_result);
+
 	cvWaitKey();
 
 }
