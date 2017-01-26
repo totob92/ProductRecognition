@@ -103,7 +103,11 @@ int main(int argc, char**argv){
 	cv::namedWindow("Source", cv::WINDOW_AUTOSIZE);
 	cv::imshow("Source", src);
 
-	Canny(src, dst, 50, 200, 3); 
+	cv::Mat binary_src;
+	cv::inRange(src, cv::Scalar(0, 125, 0), cv::Scalar(255, 200, 255), binary_src);
+	cv::imshow("binary", binary_src);
+
+	Canny(binary_src, dst, 50, 200, 3);
 
 	cv::namedWindow("Canny", cv::WINDOW_NORMAL);
 	cv::imshow("Canny", dst);
@@ -131,10 +135,10 @@ int main(int argc, char**argv){
 	for (int i = 0; i< contours.size(); i++)
 	{
 		cv::Scalar color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
-		drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0, cv::Point());
-		
+		//drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0, cv::Point());
+		drawContours(drawing, contours, i, color, 2, 2, hierarchy, 0, cv::Point());
 		//disegna i baricentri
-		circle(drawing, mc[i], 7, color, -1, 8, 0);
+		circle(drawing, mc[i], 2, color, -1, 8, 0);
 		
 
 	//	putText(drawing, "center", mc[i], cv::FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2);
@@ -150,7 +154,7 @@ int main(int argc, char**argv){
 	{
 		//printf(" * Contour[%d] - Area (M_00) = %.2f - Area OpenCV: %.2f - Length: %.2f \n", (int)i, moments[i].m00, contourArea(contours[i]), arcLength(contours[i], true));
 		cv::Scalar color = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
-		drawContours(drawing, contours, (int)i, color, 2, 8, hierarchy, 0,cv::Point());
+		drawContours(drawing, contours, (int)i, color, 2, 2, hierarchy, 0,cv::Point());
 		
 	}
 //----------------------------------------------------------------------
@@ -169,13 +173,13 @@ int main(int argc, char**argv){
 
 	//gradiente di x
 	
-  //Sobel(src_gray, grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_DEFAULT);
-	Scharr(src_gray, grad_x, ddepth, 1, 0, scale, delta, cv::BORDER_DEFAULT);
+	Sobel(src_gray, grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_DEFAULT);
+  //Scharr(src_gray, grad_x, ddepth, 1, 0, scale, delta, cv::BORDER_DEFAULT);
 	cv::convertScaleAbs(grad_x, abs_grad_x);
 
 	//gradiente di y
-  //Sobel(src_gray, grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_DEFAULT);
-	Scharr(src_gray, grad_y, ddepth, 0, 1, scale, delta, cv::BORDER_DEFAULT);
+  Sobel(src_gray, grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_DEFAULT);
+  //Scharr(src_gray, grad_y, ddepth, 0, 1, scale, delta, cv::BORDER_DEFAULT);
 	cv::convertScaleAbs(grad_y, abs_grad_y);
 	
 	//gradiente totale approssimato
@@ -199,7 +203,7 @@ int main(int argc, char**argv){
 	{
 		for (int j = 0; j < contours[i].size(); j++){
 			cv::Point2f temp = contours[i].at(j);
-			cv::line(rette_result, mc[i], temp, cv::Scalar(0, 255, 0), 6);
+			cv::line(rette_result, mc[i], temp, cv::Scalar(0, 255, 0), 0.5);
 		}
 	}
 	cv::imshow("rette",rette_result);
