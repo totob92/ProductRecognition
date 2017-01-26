@@ -143,6 +143,8 @@ int main(int argc, char**argv){
 	cv::namedWindow("conoturs", cv::WINDOW_NORMAL);
 	cv::imshow("conoturs", drawing);
 
+
+// stampa a video -----------------------------------------------------
 	printf("\t Info: Area and Contour Length \n");
 	for (size_t i = 0; i< contours.size(); i++)
 	{
@@ -151,7 +153,42 @@ int main(int argc, char**argv){
 		drawContours(drawing, contours, (int)i, color, 2, 8, hierarchy, 0,cv::Point());
 		
 	}
+//----------------------------------------------------------------------
+	
+	// GRADIENTI
+	int ddepth = CV_16S;
+	int scale = 1;
+	int delta = 0;
+	cv::Mat src_gray;
+	cv::GaussianBlur(src, dst, cv::Size(3, 3), 0, 0, cv::BORDER_DEFAULT);
+	//bianco e nero
+	cv::cvtColor(src, src_gray, CV_BGR2GRAY);
+	cv::Mat grad_wind;
 
+	cv::Mat grad_x, grad_y, abs_grad_x, abs_grad_y;
+
+	//gradiente di x
+	
+  //Sobel(src_gray, grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_DEFAULT);
+	Scharr(src_gray, grad_x, ddepth, 1, 0, scale, delta, cv::BORDER_DEFAULT);
+	cv::convertScaleAbs(grad_x, abs_grad_x);
+
+	//gradiente di y
+  //Sobel(src_gray, grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_DEFAULT);
+	Scharr(src_gray, grad_y, ddepth, 0, 1, scale, delta, cv::BORDER_DEFAULT);
+	cv::convertScaleAbs(grad_y, abs_grad_y);
+	
+	//gradiente totale approssimato
+	cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad_wind);
+
+
+
+
+	cv::imshow("gradiente", grad_wind);
+
+	
+
+	//------------------------------------------------------------------------
 	cvWaitKey();
 
 }
