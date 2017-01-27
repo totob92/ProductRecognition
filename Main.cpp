@@ -8,6 +8,54 @@
 
 int main(int argc, char**argv){
 
+#if (defined(CV_VERSION_EPOCH) && CV_VERSION_EPOCH == 2)
+	cv::initModule_nonfree();
+#endif
+
+
+	cv::Mat model_1 = cv::imread("../model.png");
+	cv::Mat scene = cv::imread("../scene.png");
+
+	int max_keypoint = 1000;
+
+	#if (defined(CV_VERSION_EPOCH) && CV_VERSION_EPOCH == 2)
+		cv::Ptr<cv::Feature2D> detector = cv::Feature2D::create("SIFT");
+		cv::Ptr<cv::Feature2D> descriptor = cv::Feature2D::create("SIFT");
+	#else
+		cv::Ptr<cv::Feature2D> detector = cv::BRISK::create();
+		cv::Ptr<cv::Feature2D> descriptor = cv::BRISK::create();
+	#endif
+
+		std::vector<cv::KeyPoint> keypoints_model_1, keypoints_scene;
+
+		Keypoint_Detection(model_1, detector, keypoints_model_1);
+		Keypoint_Detection(scene, detector, keypoints_scene);
+
+		cv::Mat descriptor_model_1, descriptor_scene;
+
+		Keypoint_Descriptor(model_1, keypoints_model_1, descriptor, descriptor_model_1);
+		Keypoint_Descriptor(scene, keypoints_scene, descriptor, descriptor_scene);
+
+		#if (defined(CV_VERSION_EPOCH) && CV_VERSION_EPOCH == 2)
+			cv::Ptr<cv::DescriptorMatcher> matcher_1 = cv::DescriptorMatcher::create("FlannBased");
+			cv::Ptr<cv::DescriptorMatcher> matcher_2 = cv::DescriptorMatcher::create("FlannBased");
+		#else
+			cv::Ptr<cv::DescriptorMatcher> matcher = cv::makePtr<cv::FlannBasedMatcher>(new cv::flann::LshIndexParams(10, 20, 2));
+		#endif
+
+		std::vector<cv::DMatch> filtered_match_1;
+		std::vector<cv::DMatch> all_match_1;
+
+		Descriptor_Matching(model_1, scene, descriptor_model_1, descriptor_scene, keypoints_model_1, keypoints_scene, matcher_1, filtered_match_1, all_match_1);
+
+		//Homography(model_1, scene, keypoints_model_1, keypoints_scene, filtered_match_1);
+
+		
+		DBSCAN_keypoints(model_1, &keypoints_model_1, 50, 1);
+		DBSCAN_keypoints(scene, &keypoints_scene, 50, 1);
+
+
+
 //-------------------------TASK A--------------------------------------------------
 	/*
 #if (defined(CV_VERSION_EPOCH) && CV_VERSION_EPOCH == 2)
@@ -16,10 +64,10 @@ int main(int argc, char**argv){
 
 	
 	cv::Mat model_1 = cv::imread("../models/0.jpg");
-	cv::Mat model_2 = cv::imread("../models/26.jpg");
-	cv::Mat model_3 = cv::imread("../models/25.jpg");
+	cv::Mat model_2 = cv::imread("../models/0.jpg");
+	cv::Mat model_3 = cv::imread("../models/1.jpg");
 	cv::Mat model_4 = cv::imread("../models/11.jpg");
-	cv::Mat scene = cv::imread("../scenes/e4.png");
+	cv::Mat scene = cv::imread("../scenes/m2.png");
 	if (model_1.data == NULL || scene.data == NULL){
 		std::cout << "Unable to load image..." << std::endl;
 		std::exit(1);
@@ -88,8 +136,9 @@ int main(int argc, char**argv){
 
 	*/
 
-//-------------------------TASK B--------------------------------------------------
 
+//-------------------------TASK B--------------------------------------------------
+	/*
 #if (defined(CV_VERSION_EPOCH) && CV_VERSION_EPOCH == 2)
 	cv::initModule_nonfree();
 #endif
@@ -194,7 +243,7 @@ int main(int argc, char**argv){
 	}
 
 	cv::imshow("gradiente", grad_wind);
-
+*/
 	
 
 	//------------------------------------------------------------------------
@@ -212,10 +261,10 @@ int main(int argc, char**argv){
 		}
 	}
 	cv::imshow("rette",rette_result);
-	*/
+	
 
 
 
 	cvWaitKey();
-
+	*/
 }
