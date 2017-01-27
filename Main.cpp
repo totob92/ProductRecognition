@@ -185,8 +185,13 @@ int main(int argc, char**argv){
 	//gradiente totale approssimato
 	cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad_wind);
 
-
-
+	for (int i = 0; i < grad_wind.rows; i++)
+	{
+		for (int j = 0; j < grad_wind.cols; j++){
+			if (grad_wind.data[i*grad_wind.step + j]!=0)
+			printf("%hu\n", grad_wind.data[i*grad_wind.step + j]);
+		}
+	}
 
 	cv::imshow("gradiente", grad_wind);
 
@@ -197,7 +202,7 @@ int main(int argc, char**argv){
 	//-------------------------------------test pasquale----------------------
 	//stampo le rette che collegano il baricentro con i punti dei bordi
 
-	cv::Mat rette_result = cv::Mat::zeros(drawing.size(), CV_8UC3);
+	/*cv::Mat rette_result = cv::Mat::zeros(drawing.size(), CV_8UC3);
 
 	for (int i = 0; i < contours.size(); i++)
 	{
@@ -207,6 +212,9 @@ int main(int argc, char**argv){
 		}
 	}
 	cv::imshow("rette",rette_result);
+	*/
+
+
 
 	cvWaitKey();
 
