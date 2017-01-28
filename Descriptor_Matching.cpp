@@ -29,6 +29,24 @@ void Descriptor_Matching(cv::Mat model, cv::Mat scene, cv::Mat descriptor_model,
 	}
 	std::cout << filtered_match.size() << " good match after ratio test" << std::endl;
 
+	/*std::vector<cv::Point2f> baricentri;
+	float massaTot = 0;
+	float xTot = 0;
+	float yTot = 0;
+
+	for (int i = 0; i < keypoints_model.size(); i++){
+		massaTot = massaTot + keypoints_model[i].size;
+		xTot = xTot + (keypoints_model[i].size*keypoints_model[i].pt.x);
+		yTot = xTot + (keypoints_model[i].size*keypoints_model[i].pt.y);
+	}
+	printf("[%d] [%d] [%d] ", (int)(xTot / massaTot), (int)(yTot / massaTot), (int)massaTot);
+
+	cv::circle(model, cv::Point((int)(xTot / massaTot), (int)(yTot / massaTot)),1,cv::Scalar(0,255,0));
+	cv::namedWindow("baricentro", cv::WINDOW_NORMAL);
+	cv::imshow("baricentro", model);
+	cv::waitKey();
+	*/
+
 	if (visualize_everything){
 		//draw matches
 		cv::Mat result_pre_filter, result;

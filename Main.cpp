@@ -2,6 +2,7 @@
 #include "Keypoint_Descriptor.h"
 #include "Descriptor_Matching.h"
 #include "Homography.h"
+#include "Utils.h"
 #define VISUALIZE_EVERYTHING = true; 
 
 
@@ -12,9 +13,12 @@ int main(int argc, char**argv){
 	cv::initModule_nonfree();
 #endif
 
-
 	cv::Mat model_1 = cv::imread("../model.png");
 	cv::Mat scene = cv::imread("../scene.png");
+	//cv::Mat model_1;
+	//cv::Mat scene;
+	//cv::inRange(model_1_loaded, cv::Scalar(0, 125, 0), cv::Scalar(255, 200, 255), model_1);
+	//cv::inRange(scene_loaded, cv::Scalar(0, 125, 0), cv::Scalar(255, 200, 255), scene);
 
 	int max_keypoint = 1000;
 
@@ -47,12 +51,30 @@ int main(int argc, char**argv){
 		std::vector<cv::DMatch> all_match_1;
 
 		Descriptor_Matching(model_1, scene, descriptor_model_1, descriptor_scene, keypoints_model_1, keypoints_scene, matcher_1, filtered_match_1, all_match_1);
-
-		//Homography(model_1, scene, keypoints_model_1, keypoints_scene, filtered_match_1);
+		
+		//ottengo i keypoint che fanno match
+		std::vector<cv::KeyPoint> keypoints_match;
+		cv::Mat target_copy;
+		for (int i = 0; i < filtered_match_1.size(); i++){
+			int temp = filtered_match_1.at(i).queryIdx;
+			keypoints_match.push_back(keypoints_scene.at(temp));
+		}
+		cv::drawKeypoints(scene, keypoints_match, target_copy, cv::Scalar(0,255,0), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+		cv::namedWindow("speriamo", cv::WINDOW_NORMAL);
+		cv::imshow("speriamo", target_copy);
+		cv::waitKey();
 
 		
-		DBSCAN_keypoints(model_1, &keypoints_model_1, 50, 1);
-		DBSCAN_keypoints(scene, &keypoints_scene, 50, 1);
+
+		DBSCAN_keypoints(scene, &keypoints_match, 50, 1);
+
+		cv::circle(model_1, getCenterOfImage(model_1), 10,cv::Scalar(0, 255,0));
+		cv::namedWindow("speriamo bari", cv::WINDOW_NORMAL);
+		cv::imshow("speriamo bari", model_1);
+		cv::waitKey();
+
+
+		//Homography(model_1, scene, keypoints_model_1, keypoints_scene, filtered_match_1);
 
 
 
