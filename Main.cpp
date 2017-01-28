@@ -67,11 +67,25 @@ int main(int argc, char**argv){
 		
 
 		DBSCAN_keypoints(scene, &keypoints_match, 50, 1);
-
+		/*
 		cv::circle(model_1, getCenterOfImage(model_1), 10,cv::Scalar(0, 255,0));
 		cv::namedWindow("speriamo bari", cv::WINDOW_NORMAL);
 		cv::imshow("speriamo bari", model_1);
+		cv::waitKey();*/
+
+		for (int i = 0; i < filtered_match_1.size(); i++){
+
+			int pos_keypoint_model = filtered_match_1.at(i).queryIdx;
+			int pos_keypoint_scene = filtered_match_1.at(i).imgIdx;
+			cv::Point centerofimage = getCenterOfImage(scene);
+			cv::Point centro = getCenterKeypoints(keypoints_model_1.at(pos_keypoint_model), 
+				keypoints_scene.at(pos_keypoint_scene), centerofimage);
+			cv::circle(scene, centro, 20, cv::Scalar(0, 255, 0));
+		}
+		cv::namedWindow("speriamo sti centri", cv::WINDOW_NORMAL);
+		cv::imshow("speriamo sti centri", scene);
 		cv::waitKey();
+		
 
 
 		//Homography(model_1, scene, keypoints_model_1, keypoints_scene, filtered_match_1);
