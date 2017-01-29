@@ -54,39 +54,32 @@ int main(int argc, char**argv){
 		
 		//ottengo i keypoint che fanno match
 		std::vector<cv::KeyPoint> keypoints_match;
-		cv::Mat target_copy;
-		for (int i = 0; i < filtered_match_1.size(); i++){
-			int temp = filtered_match_1.at(i).queryIdx;
-			keypoints_match.push_back(keypoints_scene.at(temp));
-		}
-		cv::drawKeypoints(scene, keypoints_match, target_copy, cv::Scalar(0,255,0), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-		cv::namedWindow("speriamo", cv::WINDOW_NORMAL);
-		cv::imshow("speriamo", target_copy);
-		cv::waitKey();
+		Keypoint_Matching_On_Scene(filtered_match_1, keypoints_scene, scene, keypoints_match);
 
 		
 
-		DBSCAN_keypoints(scene, &keypoints_match, 50, 1);
+		//DBSCAN_keypoints(scene, &keypoints_match, 50, 1);
 		/*
 		cv::circle(model_1, getCenterOfImage(model_1), 10,cv::Scalar(0, 255,0));
 		cv::namedWindow("speriamo bari", cv::WINDOW_NORMAL);
 		cv::imshow("speriamo bari", model_1);
 		cv::waitKey();*/
+		for (int i = 0; i < keypoints_match.size(); i++){
+		
+			int random = rand() % 255;
 
-		for (int i = 0; i < filtered_match_1.size(); i++){
-
-			int pos_keypoint_model = filtered_match_1.at(i).queryIdx;
-			int pos_keypoint_scene = filtered_match_1.at(i).imgIdx;
-			cv::Point centerofimage = getCenterOfImage(scene);
+			int pos_keypoint_model = filtered_match_1.at(i).trainIdx;
+			int pos_keypoint_scene = filtered_match_1.at(i).queryIdx;
+			cv::Point centerofimage = getCenterOfImage(model_1);
 			cv::Point centro = getCenterKeypoints(keypoints_model_1.at(pos_keypoint_model), 
 				keypoints_scene.at(pos_keypoint_scene), centerofimage);
-			cv::circle(scene, centro, 20, cv::Scalar(0, 255, 0));
+			printf("[%d %d]\n",centro.x,centro.y);
+			cv::Scalar color = cv::Scalar(random, random, random);
+			cv::circle(scene, centro, 5, color,1,8,0);
 		}
 		cv::namedWindow("speriamo sti centri", cv::WINDOW_NORMAL);
 		cv::imshow("speriamo sti centri", scene);
 		cv::waitKey();
-		
-
 
 		//Homography(model_1, scene, keypoints_model_1, keypoints_scene, filtered_match_1);
 

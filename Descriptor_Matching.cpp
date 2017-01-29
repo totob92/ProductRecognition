@@ -61,3 +61,18 @@ void Descriptor_Matching(cv::Mat model, cv::Mat scene, cv::Mat descriptor_model,
 	}
 	
 }
+
+void Keypoint_Matching_On_Scene(std::vector<cv::DMatch> filtered_matches, std::vector<cv::KeyPoint> keypoints_image, cv::Mat image, std::vector<cv::KeyPoint> &keypoints_match){
+
+	cv::Mat target_copy;
+
+	for (int i = 0; i < filtered_matches.size(); i++){
+		int temp = filtered_matches.at(i).queryIdx;
+		keypoints_match.push_back(keypoints_image.at(temp));
+	}
+	cv::drawKeypoints(image, keypoints_match, target_copy, cv::Scalar(0, 255, 0), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+	cv::namedWindow("Keypoint_Matching", cv::WINDOW_NORMAL);
+	cv::imshow("Keypoint_Matching", target_copy);
+	cv::waitKey();
+
+}
