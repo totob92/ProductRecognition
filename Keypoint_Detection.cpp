@@ -193,7 +193,7 @@ std::vector<std::vector<cv::Point>> DBSCAN_centers(cv::Mat image, std::vector<cv
 		}
 	}
 
-	cv::Mat target_copy = image;
+	/*cv::Mat target_copy = image;
 	printf("%d\n", clusters.size());
 	cvWaitKey();
 	for (int i = 0; i<clusters.size(); i++){
@@ -208,7 +208,7 @@ std::vector<std::vector<cv::Point>> DBSCAN_centers(cv::Mat image, std::vector<cv
 		//cv::imwrite("cluster0.png", target_copy);
 		cvWaitKey();
 	}
-
+	*/
 
 	return clusters;
 }
@@ -228,6 +228,7 @@ std::vector<int> regionQueryCenter(std::vector<cv::Point> *points, cv::Point *po
 	return retKeys;
 }
 
+/*
 std::vector<std::vector<KeyPoint_Center>> DBSCAN_centers_plus(cv::Mat image, std::vector<KeyPoint_Center> points, float eps, int minPts)
 {
 	std::vector<std::vector<KeyPoint_Center>> clusters;
@@ -332,4 +333,4 @@ std::vector<int> regionQueryCenter_Plus(std::vector<KeyPoint_Center> points, Key
 		}
 	}
 	return retKeys;
-}
+}*/

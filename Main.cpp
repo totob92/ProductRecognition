@@ -3,6 +3,7 @@
 #include "Descriptor_Matching.h"
 #include "Homography.h"
 #include "Utils.h"
+#include "Box.h"
 #define VISUALIZE_EVERYTHING = true; 
 
 
@@ -14,11 +15,7 @@ int main(int argc, char**argv){
 #endif
 
 	cv::Mat model_1 = cv::imread("../models/25.jpg");
-	cv::Mat scene = cv::imread("../scenes/m4.png");
-	//cv::Mat model_1;
-	//cv::Mat scene;
-	//cv::inRange(model_1_loaded, cv::Scalar(0, 125, 0), cv::Scalar(255, 200, 255), model_1);
-	//cv::inRange(scene_loaded, cv::Scalar(0, 125, 0), cv::Scalar(255, 200, 255), scene);
+	cv::Mat scene = cv::imread("../scenes/m5.png");
 
 	int max_keypoint = 1000;
 
@@ -57,63 +54,48 @@ int main(int argc, char**argv){
 		Keypoint_Matching_On_Scene(filtered_match_1, keypoints_scene, scene, keypoints_match);
 
 		
-
-		//DBSCAN_keypoints(scene, &keypoints_match, 50, 1);
-		/*
-		cv::circle(model_1, getCenterOfImage(model_1), 10,cv::Scalar(0, 255,0));
-		cv::namedWindow("speriamo bari", cv::WINDOW_NORMAL);
-		cv::imshow("speriamo bari", model_1);
-		cv::waitKey();*/
 		cv::Point centerofimage = getCenterOfImage(model_1);
+		
 		std::vector<cv::Point> centri;
 		std::vector<KeyPoint_Center> corrispondenze;
 
-		for (int i = 0; i < keypoints_match.size(); i++){
-	
-			int pos_keypoint_model = filtered_match_1.at(i).trainIdx;
-			int pos_keypoint_scene = filtered_match_1.at(i).queryIdx;
-			cv::Point centro = getCenterKeypoints(keypoints_model_1.at(pos_keypoint_model), 
-				keypoints_scene.at(pos_keypoint_scene), centerofimage);
-			cv::KeyPoint temp = keypoints_scene.at(pos_keypoint_scene);
-			centri.push_back(centro);
-			KeyPoint_Center corr = KeyPoint_Center(keypoints_scene.at(pos_keypoint_scene), 
-				keypoints_model_1.at(pos_keypoint_model),centro);
-			corrispondenze.push_back(corr);
-			printf("Pos:[%d %d]\n", centro.x, centro.y);
-			//cv::Scalar color = cv::Scalar(0,0,255);
-			//cv::circle(scene, centro, 2, color,-1);
-		}
-		/*cv::namedWindow("Centri", cv::WINDOW_NORMAL);
-		cv::imshow("Centri", scene);
-		cv::waitKey();*/
+		corrispondenze = trovaCentri(model_1, keypoints_match, filtered_match_1, keypoints_model_1, keypoints_scene, scene, &centri);
+		std::vector<std::vector<cv::Point>> clusters_centri = DBSCAN_centers(scene, &centri, 20, 10);
+		std::vector<cv::Point> baricentri = trovaBaricentri(clusters_centri, scene);
 
-		/*
-		std::vector<cv::Point> centriTemp;
-		for (int i = 0; i < centri.size(); i++){
-			centriTemp.push_back(centri.at(i));
-		}
-
-		for (int i = 0; i < centri.size(); i++){
-
-			cv::Point temp = centri.at(i);
-			int occorrenze = contaOccorenze(temp, centriTemp);
-			if (occorrenze >= 2){
-				cv::Scalar color = cv::Scalar(0, 255, 0);
-				cv::circle(scene, temp, 5, color, -1);
+		//disegno rettangolo
+		std::vector<std::vector<KeyPoint_Center>> corrispondenze_plus = DBSCAN_centers_plus(scene, corrispondenze, 20, 10);
+		float scale_tot = 0;
+		float rotazione_tot = 0;
+		for (int i = 0; i < corrispondenze_plus.size(); i++){
+			std::vector<KeyPoint_Center> temp_corrisp = corrispondenze_plus.at(i);
+			for (int j = 0; j < temp_corrisp.size(); j++){
+				float scale = temp_corrisp.at(i).KeyPointModel.size / temp_corrisp.at(i).keyPointScene.size;
+				scale_tot += scale;
+				float rotazione = temp_corrisp.at(i).KeyPointModel.angle - temp_corrisp.at(i).keyPointScene.angle;
+				rotazione_tot += rotazione;
 			}
+			scale_tot = scale_tot / temp_corrisp.size();
+			printf("[%f scala]\n", scale_tot);
+			rotazione_tot = rotazione_tot / temp_corrisp.size();
+			//disegno rettangolo
+			float width = model_1.cols/2;
+			float hight = model_1.rows/2;
+			cv::Point point0 = cv::Point(baricentri.at(i).x - width*scale_tot, baricentri.at(i).y - hight*scale_tot);
+			cv::Point point1 = cv::Point(baricentri.at(i).x + width*scale_tot, baricentri.at(i).y - hight*scale_tot);
+			cv::Point point2 = cv::Point(baricentri.at(i).x -width*scale_tot, baricentri.at(i).y + hight*scale_tot);
+			cv::Point point3 = cv::Point(baricentri.at(i).x +width*scale_tot, baricentri.at(i).y + hight*scale_tot);
+			Box box = Box(point0, point1, point3, point2);
+			box.drawYourself(scene, cv::Scalar(0, 255, 0), 6);
+			cv::namedWindow("Box speriamo", cv::WINDOW_NORMAL);
+			cv::imshow("Box speriamo", scene);
+			cvWaitKey();
+			scale_tot = 0;
+			rotazione_tot = 0;
 		}
-
-
-		cv::namedWindow("Centri_Max", cv::WINDOW_NORMAL);
-		cv::imshow("Centri_Max", scene);
-		cv::waitKey();
-		*/
-
-		DBSCAN_centers(scene, &centri,20,10);
+		cv::imwrite("box.png", scene);
 		
-
-
-		//Homography(model_1, scene, keypoints_model_1, keypoints_scene, filtered_match_1);
+		
 
 
 
