@@ -64,22 +64,25 @@ int main(int argc, char**argv){
 		cv::namedWindow("speriamo bari", cv::WINDOW_NORMAL);
 		cv::imshow("speriamo bari", model_1);
 		cv::waitKey();*/
-		for (int i = 0; i < keypoints_match.size(); i++){
 		
-			int random = rand() % 255;
 
+		for (int i = 0; i < keypoints_match.size(); i++){
+	
 			int pos_keypoint_model = filtered_match_1.at(i).trainIdx;
 			int pos_keypoint_scene = filtered_match_1.at(i).queryIdx;
 			cv::Point centerofimage = getCenterOfImage(model_1);
 			cv::Point centro = getCenterKeypoints(keypoints_model_1.at(pos_keypoint_model), 
 				keypoints_scene.at(pos_keypoint_scene), centerofimage);
-			printf("[%d %d]\n",centro.x,centro.y);
-			cv::Scalar color = cv::Scalar(random, random, random);
+			printf("Pos:[%d %d]\n", centro.x, centro.y);
+			cv::Scalar color = cv::Scalar(255,0, 0);
 			cv::circle(scene, centro, 5, color,1,8,0);
+
 		}
+
 		cv::namedWindow("speriamo sti centri", cv::WINDOW_NORMAL);
 		cv::imshow("speriamo sti centri", scene);
 		cv::waitKey();
+		
 
 		//Homography(model_1, scene, keypoints_model_1, keypoints_scene, filtered_match_1);
 
