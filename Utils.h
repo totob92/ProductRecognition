@@ -3,3 +3,5 @@
 cv::Point getCenterOfImage(cv::Mat image);
 
 cv::Point getCenterKeypoints(cv::KeyPoint keypoint_i, cv::KeyPoint keypoint_j, cv::Point center);
+
+int contaOccorenze(cv::Point p, std::vector<cv::Point> points);

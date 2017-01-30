@@ -124,3 +124,212 @@ std::vector<int> regionQuery(std::vector<cv::KeyPoint> *keypoints, cv::KeyPoint 
 	return retKeys;
 }
 
+
+//-------------------------------------------------
+std::vector<std::vector<cv::Point>> DBSCAN_centers(cv::Mat image, std::vector<cv::Point> *points, float eps, int minPts)
+{
+	std::vector<std::vector<cv::Point>> clusters;
+	std::vector<bool> clustered;
+	std::vector<int> noise;
+	std::vector<bool> visited;
+	std::vector<int> neighborPts;
+	std::vector<int> neighborPts_;
+	int c;
+
+	int noKeys = points->size();
+
+	//init clustered and visited
+	for (int k = 0; k < noKeys; k++)
+	{
+		clustered.push_back(false);
+		visited.push_back(false);
+	}
+
+	//C =0;
+	c = 0;
+
+	//for each unvisted point P in dataset keypoints
+	for (int i = 0; i < noKeys; i++)
+	{
+		if (!visited[i])
+		{
+			//Mark P as visited
+			visited[i] = true;
+			neighborPts = regionQueryCenter(points, &points->at(i), eps);
+			if (neighborPts.size() < minPts)
+				//Mark P as Noise
+				noise.push_back(i);
+			else
+			{
+
+				clusters.push_back(std::vector<cv::Point>());
+				//expand cluster
+				// add P to cluster c
+				clustered[i] = true;
+				clusters[c].push_back(points->at(i));
+				//for each point P' in neighborPts
+				for (int j = 0; j < neighborPts.size(); j++)
+				{
+					//if P' is not visited
+					if (!visited[neighborPts[j]])
+					{
+						//Mark P' as visited
+						neighborPts_ = regionQueryCenter(points, &points->at(neighborPts[j]), eps);
+						visited[neighborPts[j]] = true;
+
+						if (neighborPts_.size() >= minPts)
+						{
+							neighborPts.insert(neighborPts.end(), neighborPts_.begin(), neighborPts_.end());
+						}
+					}
+					// if P' is not yet a member of any cluster
+					// add P' to cluster c
+					if (!clustered[neighborPts[j]])
+						clusters[c].push_back(points->at(neighborPts[j]));
+					clustered[neighborPts[j]] = true;
+				}
+				c++;
+			}
+		}
+	}
+
+	cv::Mat target_copy = image;
+	printf("%d\n", clusters.size());
+	cvWaitKey();
+	for (int i = 0; i<clusters.size(); i++){
+		std::vector<cv::Point> cluster = clusters.at(i);
+		cv::Scalar color = cv::Scalar(100 * i, 255 / (i + 1), 255 - (i * 50));
+		printf("[Cluster:%d quantità:%d]\n", i,cluster.size());
+		for (int j = 0; j < cluster.size(); j++){
+			cv::circle(target_copy, cluster.at(j), 2, color, -1);
+		}
+		cv::namedWindow("Cluster", cv::WINDOW_NORMAL);
+		cv::imshow("Cluster", target_copy);
+		//cv::imwrite("cluster0.png", target_copy);
+		cvWaitKey();
+	}
+
+
+	return clusters;
+}
+
+std::vector<int> regionQueryCenter(std::vector<cv::Point> *points, cv::Point *point, float eps)
+{
+	float dist;
+	std::vector<int> retKeys;
+	for (int i = 0; i< points->size(); i++)
+	{
+		dist = sqrt(pow((point->x - points->at(i).x), 2) + pow((point->y - points->at(i).y), 2));
+		if (dist <= eps && dist != 0.0f)
+		{
+			retKeys.push_back(i);
+		}
+	}
+	return retKeys;
+}
+
+std::vector<std::vector<KeyPoint_Center>> DBSCAN_centers_plus(cv::Mat image, std::vector<KeyPoint_Center> points, float eps, int minPts)
+{
+	std::vector<std::vector<KeyPoint_Center>> clusters;
+	std::vector<bool> clustered;
+	std::vector<int> noise;
+	std::vector<bool> visited;
+	std::vector<int> neighborPts;
+	std::vector<int> neighborPts_;
+	int c;
+
+	int noKeys = points.size();
+
+	//init clustered and visited
+	for (int k = 0; k < noKeys; k++)
+	{
+		clustered.push_back(false);
+		visited.push_back(false);
+	}
+
+	//C =0;
+	c = 0;
+
+	//for each unvisted point P in dataset keypoints
+	for (int i = 0; i < noKeys; i++)
+	{
+		if (!visited[i])
+		{
+			//Mark P as visited
+			visited[i] = true;
+			neighborPts = regionQueryCenter_Plus(points, points.at(i), eps);
+			if (neighborPts.size() < minPts)
+				//Mark P as Noise
+				noise.push_back(i);
+			else
+			{
+
+				clusters.push_back(std::vector<KeyPoint_Center>());
+				//expand cluster
+				// add P to cluster c
+				clustered[i] = true;
+				clusters[c].push_back(points.at(i));
+				//for each point P' in neighborPts
+				for (int j = 0; j < neighborPts.size(); j++)
+				{
+					//if P' is not visited
+					if (!visited[neighborPts[j]])
+					{
+						//Mark P' as visited
+						neighborPts_ = regionQueryCenter_Plus(points, points.at(neighborPts[j]), eps);
+						visited[neighborPts[j]] = true;
+
+						if (neighborPts_.size() >= minPts)
+						{
+							neighborPts.insert(neighborPts.end(), neighborPts_.begin(), neighborPts_.end());
+						}
+					}
+					// if P' is not yet a member of any cluster
+					// add P' to cluster c
+					if (!clustered[neighborPts[j]])
+						clusters[c].push_back(points.at(neighborPts[j]));
+					clustered[neighborPts[j]] = true;
+				}
+				c++;
+			}
+		}
+	}
+
+	cv::Mat target_copy ;
+	printf("%d\n", clusters.size());
+	cvWaitKey();
+	for (int i = 0; i<clusters.size(); i++){
+		std::vector<KeyPoint_Center> cluster = clusters.at(i);
+		std::vector<cv::KeyPoint> tempKeyPoint;
+		for (int j = 0; j < cluster.size(); j++){
+			tempKeyPoint.push_back(cluster.at(j).keyPointScene);
+		}
+		cv::Scalar color = cv::Scalar(100 * i, 255 / (i + 1), 255 - (i * 50));
+		cv::drawKeypoints(image, tempKeyPoint, target_copy, color, cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+		printf("[Cluster:%d quantità:%d]\n", i, cluster.size());
+		cv::namedWindow("Cluster", cv::WINDOW_NORMAL);
+		cv::imshow("Cluster", target_copy);
+		//cv::imwrite("cluster0.png", target_copy);
+		cvWaitKey();
+		tempKeyPoint.clear();
+	}
+
+
+	
+	return clusters;
+}
+
+std::vector<int> regionQueryCenter_Plus(std::vector<KeyPoint_Center> points, KeyPoint_Center point, float eps)
+{
+	float dist;
+	std::vector<int> retKeys;
+	for (int i = 0; i< points.size(); i++)
+	{
+		dist = sqrt(pow((point.center.x - points.at(i).center.x), 2) + pow((point.center.y - points.at(i).center.y), 2));
+		if (dist <= eps && dist != 0.0f)
+		{
+			retKeys.push_back(i);
+		}
+	}
+	return retKeys;
+}

@@ -3,8 +3,8 @@
 cv::Point getCenterOfImage(cv::Mat image){
 
 	cv::Point result = cvPoint(0, 0);
-	result.x = image.rows / 2;
-	result.y = image.cols / 2;
+	result.x = image.cols / 2;
+	result.y = image.rows / 2;
 
 	return result;
 
@@ -35,6 +35,18 @@ cv::Point getCenterKeypoints(cv::KeyPoint keypoint_model, cv::KeyPoint keypoint_
 	cv::Point result = cv::Point(temp_0, temp_1);
 
 	return result;
+}
+
+int contaOccorenze(cv::Point p, std::vector<cv::Point> points){
+
+	int result = 0;
+	for (int i = 0; i < points.size(); i++){
+		if (p.x == points.at(i).x && p.y == points.at(i).y){
+			result++;
+		}
+	}
+	return result;
+
 }
 
 

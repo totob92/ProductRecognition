@@ -13,8 +13,8 @@ int main(int argc, char**argv){
 	cv::initModule_nonfree();
 #endif
 
-	cv::Mat model_1 = cv::imread("../model.png");
-	cv::Mat scene = cv::imread("../scene.png");
+	cv::Mat model_1 = cv::imread("../models/25.jpg");
+	cv::Mat scene = cv::imread("../scenes/m4.png");
 	//cv::Mat model_1;
 	//cv::Mat scene;
 	//cv::inRange(model_1_loaded, cv::Scalar(0, 125, 0), cv::Scalar(255, 200, 255), model_1);
@@ -64,25 +64,54 @@ int main(int argc, char**argv){
 		cv::namedWindow("speriamo bari", cv::WINDOW_NORMAL);
 		cv::imshow("speriamo bari", model_1);
 		cv::waitKey();*/
-		
+		cv::Point centerofimage = getCenterOfImage(model_1);
+		std::vector<cv::Point> centri;
+		std::vector<KeyPoint_Center> corrispondenze;
 
 		for (int i = 0; i < keypoints_match.size(); i++){
 	
 			int pos_keypoint_model = filtered_match_1.at(i).trainIdx;
 			int pos_keypoint_scene = filtered_match_1.at(i).queryIdx;
-			cv::Point centerofimage = getCenterOfImage(model_1);
 			cv::Point centro = getCenterKeypoints(keypoints_model_1.at(pos_keypoint_model), 
 				keypoints_scene.at(pos_keypoint_scene), centerofimage);
+			cv::KeyPoint temp = keypoints_scene.at(pos_keypoint_scene);
+			centri.push_back(centro);
+			KeyPoint_Center corr = KeyPoint_Center(keypoints_scene.at(pos_keypoint_scene), 
+				keypoints_model_1.at(pos_keypoint_model),centro);
+			corrispondenze.push_back(corr);
 			printf("Pos:[%d %d]\n", centro.x, centro.y);
-			cv::Scalar color = cv::Scalar(255,0, 0);
-			cv::circle(scene, centro, 5, color,1,8,0);
+			//cv::Scalar color = cv::Scalar(0,0,255);
+			//cv::circle(scene, centro, 2, color,-1);
+		}
+		/*cv::namedWindow("Centri", cv::WINDOW_NORMAL);
+		cv::imshow("Centri", scene);
+		cv::waitKey();*/
 
+		/*
+		std::vector<cv::Point> centriTemp;
+		for (int i = 0; i < centri.size(); i++){
+			centriTemp.push_back(centri.at(i));
 		}
 
-		cv::namedWindow("speriamo sti centri", cv::WINDOW_NORMAL);
-		cv::imshow("speriamo sti centri", scene);
+		for (int i = 0; i < centri.size(); i++){
+
+			cv::Point temp = centri.at(i);
+			int occorrenze = contaOccorenze(temp, centriTemp);
+			if (occorrenze >= 2){
+				cv::Scalar color = cv::Scalar(0, 255, 0);
+				cv::circle(scene, temp, 5, color, -1);
+			}
+		}
+
+
+		cv::namedWindow("Centri_Max", cv::WINDOW_NORMAL);
+		cv::imshow("Centri_Max", scene);
 		cv::waitKey();
+		*/
+
+		DBSCAN_centers(scene, &centri,20,10);
 		
+
 
 		//Homography(model_1, scene, keypoints_model_1, keypoints_scene, filtered_match_1);
 
