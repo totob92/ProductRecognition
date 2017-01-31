@@ -8,16 +8,19 @@
 
 
 
+
 int main(int argc, char**argv){
 
 #if (defined(CV_VERSION_EPOCH) && CV_VERSION_EPOCH == 2)
 	cv::initModule_nonfree();
 #endif
 
-	cv::Mat model_1 = cv::imread("../models/25.jpg");
-	cv::Mat scene = cv::imread("../scenes/m5.png");
+	cv::Mat model_1 = cv::imread("../models/24.jpg");
+	cv::Mat scene = cv::imread("../scenes/m4.png");
 
 	int max_keypoint = 1000;
+	int epsilon = 100;
+	int minPoints = 165;
 
 	#if (defined(CV_VERSION_EPOCH) && CV_VERSION_EPOCH == 2)
 		cv::Ptr<cv::Feature2D> detector = cv::Feature2D::create("SIFT");
@@ -60,11 +63,11 @@ int main(int argc, char**argv){
 		std::vector<KeyPoint_Center> corrispondenze;
 
 		corrispondenze = trovaCentri(model_1, keypoints_match, filtered_match_1, keypoints_model_1, keypoints_scene, scene, &centri);
-		std::vector<std::vector<cv::Point>> clusters_centri = DBSCAN_centers(scene, &centri, 20, 10);
+		std::vector<std::vector<cv::Point>> clusters_centri = DBSCAN_centers(scene, &centri, epsilon, minPoints);
 		std::vector<cv::Point> baricentri = trovaBaricentri(clusters_centri, scene);
 
 		//disegno rettangolo
-		std::vector<std::vector<KeyPoint_Center>> corrispondenze_plus = DBSCAN_centers_plus(scene, corrispondenze, 20, 10);
+		std::vector<std::vector<KeyPoint_Center>> corrispondenze_plus = DBSCAN_centers_plus(scene, corrispondenze, epsilon, minPoints);
 		float scale_tot = 0;
 		float rotazione_tot = 0;
 		for (int i = 0; i < corrispondenze_plus.size(); i++){
@@ -82,9 +85,27 @@ int main(int argc, char**argv){
 			float width = model_1.cols/2;
 			float hight = model_1.rows/2;
 			cv::Point point0 = cv::Point(baricentri.at(i).x - width*scale_tot, baricentri.at(i).y - hight*scale_tot);
+			/*printf("rotazione %f coseno %f\n ",rotazione_tot, cos(rotazione_tot));
+			float x_primo_0 = point0.x*cos(rotazione_tot*PI/180) - point0.y*sin(rotazione_tot*PI / 180);
+			float y_primo_0 = point0.y*cos(rotazione_tot*PI / 180) + point0.x*sin(rotazione_tot*PI / 180);
+			point0.x = x_primo_0; point0.y = y_primo_0;*/
+
+
 			cv::Point point1 = cv::Point(baricentri.at(i).x + width*scale_tot, baricentri.at(i).y - hight*scale_tot);
+			/*float x_primo_1 = point1.x*cos(rotazione_tot*PI / 180) - point1.y*sin(rotazione_tot*PI / 180);
+			float y_primo_1 = point1.y*cos(rotazione_tot*PI / 180) + point1.x*sin(rotazione_tot*PI / 180);
+			point1.x = x_primo_1; point1.y = y_primo_1;*/
+
 			cv::Point point2 = cv::Point(baricentri.at(i).x -width*scale_tot, baricentri.at(i).y + hight*scale_tot);
+			/*float x_primo_2 = point2.x*cos(rotazione_tot*PI / 180) - point2.y*sin(rotazione_tot*PI / 180);
+			float y_primo_2 = point2.y*cos(rotazione_tot*PI / 180) + point2.x*sin(rotazione_tot*PI / 180);
+			point2.x = x_primo_2; point2.y = y_primo_2;*/
+
 			cv::Point point3 = cv::Point(baricentri.at(i).x +width*scale_tot, baricentri.at(i).y + hight*scale_tot);
+			/*float x_primo_3 = point3.x*cos(rotazione_tot*PI / 180) - point3.y*sin(rotazione_tot*PI / 180);
+			float y_primo_3 = point3.y*cos(rotazione_tot*PI / 180) + point3.x*sin(rotazione_tot*PI / 180);
+			point3.x = x_primo_3; point3.y = y_primo_3;*/
+
 			Box box = Box(point0, point1, point3, point2);
 			box.drawYourself(scene, cv::Scalar(0, 255, 0), 6);
 			cv::namedWindow("Box speriamo", cv::WINDOW_NORMAL);

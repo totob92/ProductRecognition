@@ -23,8 +23,8 @@ cv::Point getCenterKeypoints(cv::KeyPoint keypoint_model, cv::KeyPoint keypoint_
 	center_relative_model.x = center.x - keypoint_model.pt.x;
 	center_relative_model.y = center.y - keypoint_model.pt.y;
 
-	float temp_0 = center_relative_model.x*cos(teta) - center_relative_model.y*sin(teta);
-	float temp_1 = center_relative_model.y*cos(teta) + center_relative_model.x*sin(teta);
+	float temp_0 = center_relative_model.x*cos(teta*PI / 180) - center_relative_model.y*sin(teta*PI / 180);
+	float temp_1 = center_relative_model.y*cos(teta*PI / 180) + center_relative_model.x*sin(teta*PI / 180);
 	
 	temp_0 = temp_0 * (scale_scene / scale_model);
 	temp_1 = temp_1 * (scale_scene / scale_model);
