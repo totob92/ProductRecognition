@@ -15,8 +15,8 @@ int main(int argc, char**argv){
 	cv::initModule_nonfree();
 #endif
 
-	cv::Mat model_1 = cv::imread("../models/24.jpg");
-	cv::Mat scene = cv::imread("../scenes/m4.png");
+	cv::Mat model_1 = cv::imread("../models/1.jpg");
+	cv::Mat scene = cv::imread("../scenes/m2.png");
 
 	int max_keypoint = 1000;
 	int epsilon = 100;
@@ -56,8 +56,12 @@ int main(int argc, char**argv){
 		std::vector<cv::KeyPoint> keypoints_match;
 		Keypoint_Matching_On_Scene(filtered_match_1, keypoints_scene, scene, keypoints_match);
 
-		
+		cv::Mat tempmodel = model_1;
 		cv::Point centerofimage = getCenterOfImage(model_1);
+		cv::circle(tempmodel, centerofimage, 2, cv::Scalar(0, 255, 0), -1);
+		cv::namedWindow("centro modello");
+		cv::imshow("centro modello", tempmodel);
+		cv::waitKey();
 		
 		std::vector<cv::Point> centri;
 		std::vector<KeyPoint_Center> corrispondenze;
@@ -73,38 +77,39 @@ int main(int argc, char**argv){
 		for (int i = 0; i < corrispondenze_plus.size(); i++){
 			std::vector<KeyPoint_Center> temp_corrisp = corrispondenze_plus.at(i);
 			for (int j = 0; j < temp_corrisp.size(); j++){
-				float scale = temp_corrisp.at(i).KeyPointModel.size / temp_corrisp.at(i).keyPointScene.size;
+				float scale = temp_corrisp.at(j).KeyPointModel.size / temp_corrisp.at(j).keyPointScene.size;
 				scale_tot += scale;
-				float rotazione = temp_corrisp.at(i).KeyPointModel.angle - temp_corrisp.at(i).keyPointScene.angle;
+				float rotazione = temp_corrisp.at(j).KeyPointModel.angle - temp_corrisp.at(j).keyPointScene.angle;
 				rotazione_tot += rotazione;
 			}
 			scale_tot = scale_tot / temp_corrisp.size();
 			printf("[%f scala]\n", scale_tot);
-			rotazione_tot = rotazione_tot / temp_corrisp.size();
+			//rotazione_tot = rotazione_tot / temp_corrisp.size();
+			rotazione_tot = 90;
 			//disegno rettangolo
 			float width = model_1.cols/2;
 			float hight = model_1.rows/2;
 			cv::Point point0 = cv::Point(baricentri.at(i).x - width*scale_tot, baricentri.at(i).y - hight*scale_tot);
-			/*printf("rotazione %f coseno %f\n ",rotazione_tot, cos(rotazione_tot));
+			printf("rotazione %f coseno %f\n ", rotazione_tot, cos(rotazione_tot*PI / 180));
+
 			float x_primo_0 = point0.x*cos(rotazione_tot*PI/180) - point0.y*sin(rotazione_tot*PI / 180);
 			float y_primo_0 = point0.y*cos(rotazione_tot*PI / 180) + point0.x*sin(rotazione_tot*PI / 180);
-			point0.x = x_primo_0; point0.y = y_primo_0;*/
-
+			point0.x = x_primo_0; point0.y = y_primo_0;
 
 			cv::Point point1 = cv::Point(baricentri.at(i).x + width*scale_tot, baricentri.at(i).y - hight*scale_tot);
-			/*float x_primo_1 = point1.x*cos(rotazione_tot*PI / 180) - point1.y*sin(rotazione_tot*PI / 180);
+			float x_primo_1 = point1.x*cos(rotazione_tot*PI / 180) - point1.y*sin(rotazione_tot*PI / 180);
 			float y_primo_1 = point1.y*cos(rotazione_tot*PI / 180) + point1.x*sin(rotazione_tot*PI / 180);
-			point1.x = x_primo_1; point1.y = y_primo_1;*/
+			point1.x = x_primo_1; point1.y = y_primo_1;
 
 			cv::Point point2 = cv::Point(baricentri.at(i).x -width*scale_tot, baricentri.at(i).y + hight*scale_tot);
-			/*float x_primo_2 = point2.x*cos(rotazione_tot*PI / 180) - point2.y*sin(rotazione_tot*PI / 180);
+			float x_primo_2 = point2.x*cos(rotazione_tot*PI / 180) - point2.y*sin(rotazione_tot*PI / 180);
 			float y_primo_2 = point2.y*cos(rotazione_tot*PI / 180) + point2.x*sin(rotazione_tot*PI / 180);
-			point2.x = x_primo_2; point2.y = y_primo_2;*/
+			point2.x = x_primo_2; point2.y = y_primo_2;
 
 			cv::Point point3 = cv::Point(baricentri.at(i).x +width*scale_tot, baricentri.at(i).y + hight*scale_tot);
-			/*float x_primo_3 = point3.x*cos(rotazione_tot*PI / 180) - point3.y*sin(rotazione_tot*PI / 180);
+			float x_primo_3 = point3.x*cos(rotazione_tot*PI / 180) - point3.y*sin(rotazione_tot*PI / 180);
 			float y_primo_3 = point3.y*cos(rotazione_tot*PI / 180) + point3.x*sin(rotazione_tot*PI / 180);
-			point3.x = x_primo_3; point3.y = y_primo_3;*/
+			point3.x = x_primo_3; point3.y = y_primo_3;
 
 			Box box = Box(point0, point1, point3, point2);
 			box.drawYourself(scene, cv::Scalar(0, 255, 0), 6);

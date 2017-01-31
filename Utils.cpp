@@ -80,7 +80,6 @@ std::vector<KeyPoint_Center> trovaCentri(cv::Mat model_1, std::vector<cv::KeyPoi
 			keypoints_model_1.at(pos_keypoint_model), centro);
 		corrispondenze.push_back(corr);
 
-		printf("Pos:[%d %d]\n", centro.x, centro.y);
 		cv::Scalar color = cv::Scalar(0, 0, 255);
 		cv::circle(scene, centro, 2, color, -1);
 	}
