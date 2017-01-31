@@ -1,5 +1,5 @@
 #include "opencv2/opencv.hpp"
-#include "../KeyPoint_Center.h"
+#include "KeyPoint_Center.h"
 #define PI 3.14159265
 
 cv::Point getCenterOfImage(cv::Mat image);
