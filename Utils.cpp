@@ -55,8 +55,8 @@ std::vector<cv::Point> trovaBaricentri(std::vector<std::vector<cv::Point>> clust
 		cv::circle(image, cv::Point(tot_x, tot_y), 5, cv::Scalar(255, 0, 0), -1);
 
 	}
-	cv::namedWindow("Baricentro", cv::WINDOW_NORMAL);
-	cv::imshow("Baricentro", image);
+	//cv::namedWindow("Baricentri", cv::WINDOW_NORMAL);
+	cv::imshow("Cluster", image);
 	cvWaitKey();
 	return result;
 }
@@ -83,8 +83,8 @@ std::vector<KeyPoint_Center> trovaCentri(cv::Mat model_1, std::vector<cv::KeyPoi
 		cv::Scalar color = cv::Scalar(0, 0, 255);
 		cv::circle(scene, centro, 2, color, -1);
 	}
-	cv::namedWindow("Centri", cv::WINDOW_NORMAL);
-	cv::imshow("Centri", scene);
+	cv::namedWindow("Centri non clusterizzati", cv::WINDOW_NORMAL);
+	cv::imshow("Centri non clusterizzati", scene);
 	cv::waitKey();
 
 	return corrispondenze;
@@ -158,8 +158,8 @@ std::vector<std::vector<KeyPoint_Center>> DBSCAN_centers_plus(cv::Mat image, std
 	}
 
 	cv::Mat target_copy = image;
-	printf("%d\n", clusters.size());
-	cvWaitKey();
+	printf("Numero Cluster: %d\n", clusters.size());
+	
 	for (int i = 0; i<clusters.size(); i++){
 		std::vector<KeyPoint_Center> cluster = clusters.at(i);
 		cv::Scalar color = cv::Scalar(100 * i, 255 / (i + 1), 255 - (i * 50));

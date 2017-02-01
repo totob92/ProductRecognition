@@ -3,6 +3,7 @@
 void Keypoint_Detection(cv::Mat image, cv::Ptr<cv::Feature2D> detector, std::vector<cv::KeyPoint> &keypoints_image){
 	bool visualize_everything = true;
 	detector->detect(image, keypoints_image);
+	
 	std::cout << keypoints_image.size() << " Keypoints found on model" << std::endl;
 
 	//DA TOGLIERE
@@ -16,7 +17,6 @@ void Keypoint_Detection(cv::Mat image, cv::Ptr<cv::Feature2D> detector, std::vec
 		cv::waitKey();
 		cv::destroyAllWindows();
 	}
-	
 }
 
 

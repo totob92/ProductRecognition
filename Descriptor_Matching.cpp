@@ -70,9 +70,9 @@ void Keypoint_Matching_On_Scene(std::vector<cv::DMatch> filtered_matches, std::v
 		int temp = filtered_matches.at(i).queryIdx;
 		keypoints_match.push_back(keypoints_image.at(temp));
 	}
-	cv::drawKeypoints(image, keypoints_match, target_copy, cv::Scalar(0, 255, 0), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+/*	cv::drawKeypoints(image, keypoints_match, target_copy, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 	cv::namedWindow("Keypoint_Matching", cv::WINDOW_NORMAL);
 	cv::imshow("Keypoint_Matching", target_copy);
 	cv::waitKey();
-
+	*/
 }
