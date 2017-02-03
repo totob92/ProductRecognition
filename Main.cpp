@@ -145,13 +145,13 @@ int main(int argc, char**argv){
 		std::vector<cv::KeyPoint> keypoints_from_filtered_matches;
 		Keypoints_From_Filtered_Matches(filtered_match_1, keypoints_scene, scene, keypoints_from_filtered_matches);
 
-		std::vector<KeyPoint_Center> corrispondenze;
+		std::vector<Center_From_KeyPoint> corrispondenze;
 
 		//da rifare di nuovo dato che bisogna cambiare corrispondenze
 		corrispondenze = trovaCentri(model_1, keypoints_from_filtered_matches, filtered_match_1, keypoints_model_1, keypoints_scene, scene);
 		
 		//restituira un vettore di kepointcnter che avrà gia 3 vettori dentro
-		std::vector<std::vector<KeyPoint_Center>> corrispondenze_plus = DBSCAN_centers_plus(scene, corrispondenze, epsilon, minPoints);
+		std::vector<std::vector<Center_From_KeyPoint>> corrispondenze_plus = DBSCAN_centers_plus(scene, corrispondenze, epsilon, minPoints);
 		
 		//da inglobare dentro homografi
 		std::vector<cv::Point2d> point_I_model, point_I_scene;
@@ -159,11 +159,11 @@ int main(int argc, char**argv){
 
 		for (int i = 0; i < corrispondenze_plus.size(); i++){
 			cv::Mat imageTemp = scene;
-			std::vector<KeyPoint_Center > corrispondenza_I = corrispondenze_plus.at(i);
+			std::vector<Center_From_KeyPoint > corrispondenza_I = corrispondenze_plus.at(i);
 			for (int j = 0; j < corrispondenza_I.size(); j++){
-				keypoint_I_model.push_back(corrispondenza_I.at(j).KeyPointModel);
+				keypoint_I_model.push_back(corrispondenza_I.at(j).keyPointModel);
 				keypoint_I_scene.push_back(corrispondenza_I.at(j).keyPointScene);
-				point_I_model.push_back(corrispondenza_I.at(j).KeyPointModel.pt);
+				point_I_model.push_back(corrispondenza_I.at(j).keyPointModel.pt);
 				point_I_scene.push_back(corrispondenza_I.at(j).keyPointScene.pt);
 			}
 			cv::drawKeypoints(scene, keypoint_I_scene, imageTemp, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
@@ -211,7 +211,7 @@ int main(int argc, char**argv){
 		float scale_tot = 0;
 		float rotazione_tot = 0;
 		for (int i = 0; i < corrispondenze_plus.size(); i++){
-			std::vector<KeyPoint_Center> temp_corrisp = corrispondenze_plus.at(i);
+			std::vector<Center_From_KeyPoint> temp_corrisp = corrispondenze_plus.at(i);
 			for (int j = 0; j < temp_corrisp.size(); j++){
 				float scale = temp_corrisp.at(j).KeyPointModel.size / temp_corrisp.at(j).keyPointScene.size;
 				scale_tot += scale;

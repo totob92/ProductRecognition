@@ -61,11 +61,11 @@ std::vector<cv::Point> trovaBaricentri(std::vector<std::vector<cv::Point>> clust
 	return result;
 }
 
-std::vector<KeyPoint_Center> trovaCentri(cv::Mat model, std::vector<cv::KeyPoint> keypoints_match,
+std::vector<Center_From_KeyPoint> trovaCentri(cv::Mat model, std::vector<cv::KeyPoint> keypoints_match,
 	std::vector<cv::DMatch> filtered_match, std::vector<cv::KeyPoint> keypoints_model, std::vector<cv::KeyPoint> keypoints_scene, cv::Mat scene){
 
 	cv::Point centerofimage = getCenterOfImage(model);
-	std::vector<KeyPoint_Center> corrispondenze;
+	std::vector<Center_From_KeyPoint> corrispondenze;
 
 	for (int i = 0; i < keypoints_match.size(); i++){
 
@@ -75,7 +75,7 @@ std::vector<KeyPoint_Center> trovaCentri(cv::Mat model, std::vector<cv::KeyPoint
 			keypoints_scene.at(pos_keypoint_scene), centerofimage);
 		cv::KeyPoint temp = keypoints_scene.at(pos_keypoint_scene);
 
-		KeyPoint_Center corr = KeyPoint_Center(keypoints_model.at(pos_keypoint_model), keypoints_scene.at(pos_keypoint_scene), centro);
+		Center_From_KeyPoint corr = Center_From_KeyPoint(keypoints_model.at(pos_keypoint_model), keypoints_scene.at(pos_keypoint_scene), centro);
 		corrispondenze.push_back(corr);
 
 		cv::Scalar color = cv::Scalar(0, 0, 255);
@@ -88,9 +88,9 @@ std::vector<KeyPoint_Center> trovaCentri(cv::Mat model, std::vector<cv::KeyPoint
 	return corrispondenze;
 }
 
-std::vector<std::vector<KeyPoint_Center>> DBSCAN_centers_plus(cv::Mat image, std::vector<KeyPoint_Center> points, float eps, int minPts)
+std::vector<std::vector<Center_From_KeyPoint>> DBSCAN_centers_plus(cv::Mat image, std::vector<Center_From_KeyPoint> points, float eps, int minPts)
 {
-	std::vector<std::vector<KeyPoint_Center>> clusters;
+	std::vector<std::vector<Center_From_KeyPoint>> clusters;
 	std::vector<bool> clustered;
 	std::vector<int> noise;
 	std::vector<bool> visited;
@@ -124,7 +124,7 @@ std::vector<std::vector<KeyPoint_Center>> DBSCAN_centers_plus(cv::Mat image, std
 			else
 			{
 
-				clusters.push_back(std::vector<KeyPoint_Center>());
+				clusters.push_back(std::vector<Center_From_KeyPoint>());
 				//expand cluster
 				// add P to cluster c
 				clustered[i] = true;
@@ -159,7 +159,7 @@ std::vector<std::vector<KeyPoint_Center>> DBSCAN_centers_plus(cv::Mat image, std
 	printf("Numero Cluster: %d\n", clusters.size());
 	
 	for (int i = 0; i<clusters.size(); i++){
-		std::vector<KeyPoint_Center> cluster = clusters.at(i);
+		std::vector<Center_From_KeyPoint> cluster = clusters.at(i);
 		cv::Scalar color = cv::Scalar(100 * i, 255 / (i + 1), 255 - (i * 50));
 		printf("[Cluster:%d quantità:%d]\n", i, cluster.size());
 		for (int j = 0; j < cluster.size(); j++){
@@ -175,7 +175,7 @@ std::vector<std::vector<KeyPoint_Center>> DBSCAN_centers_plus(cv::Mat image, std
 	return clusters;
 }
 
-std::vector<int> regionQueryCenter_Plus(std::vector<KeyPoint_Center> points, KeyPoint_Center point, float eps)
+std::vector<int> regionQueryCenter_Plus(std::vector<Center_From_KeyPoint> points, Center_From_KeyPoint point, float eps)
 {
 	float dist;
 	std::vector<int> retKeys;
