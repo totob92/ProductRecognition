@@ -29,25 +29,7 @@ void Descriptor_Matching(cv::Mat model, cv::Mat scene, cv::Mat descriptor_model,
 	}
 	std::cout << filtered_match.size() << " good match after ratio test" << std::endl;
 
-	/*std::vector<cv::Point2f> baricentri;
-	float massaTot = 0;
-	float xTot = 0;
-	float yTot = 0;
-
-	for (int i = 0; i < keypoints_model.size(); i++){
-		massaTot = massaTot + keypoints_model[i].size;
-		xTot = xTot + (keypoints_model[i].size*keypoints_model[i].pt.x);
-		yTot = xTot + (keypoints_model[i].size*keypoints_model[i].pt.y);
-	}
-	printf("[%d] [%d] [%d] ", (int)(xTot / massaTot), (int)(yTot / massaTot), (int)massaTot);
-
-	cv::circle(model, cv::Point((int)(xTot / massaTot), (int)(yTot / massaTot)),1,cv::Scalar(0,255,0));
-	cv::namedWindow("baricentro", cv::WINDOW_NORMAL);
-	cv::imshow("baricentro", model);
-	cv::waitKey();
-	*/
-
-	if (visualize_everything){
+	if (VISUALIZE_EVERYTHING==true){
 		//draw matches
 		cv::Mat result_pre_filter, result;
 		cv::drawMatches(scene, keypoints_scene, model, keypoints_model, all_match, result_pre_filter, cv::Scalar::all(-1), cv::Scalar::all(-1), std::vector<char>(), cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
@@ -71,10 +53,11 @@ void Keypoints_From_Filtered_Matches(std::vector<cv::DMatch> filtered_matches, s
 		keypoints_match.push_back(keypoints_image.at(temp));
 	}
 
-	//----------------------da commentare o eliminare
-	cv::drawKeypoints(image, keypoints_match, target_copy, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-	cv::namedWindow("Keypoint_Matching", cv::WINDOW_NORMAL);
-	cv::imshow("Keypoint_Matching", target_copy);
-	cv::waitKey();
-	
+	if (VISUALIZE_EVERYTHING == true){
+		cv::drawKeypoints(image, keypoints_match, target_copy, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+		cv::namedWindow("Keypoint Matching", cv::WINDOW_NORMAL);
+		cv::imshow("Keypoint Matching", target_copy);
+		cv::waitKey();
+		cv::destroyAllWindows();
+	}
 }

@@ -4,7 +4,7 @@
 #include "Homography.h"
 #include "Utils.h"
 #include "Box.h"
-#define VISUALIZE_EVERYTHING = true;
+extern bool VISUALIZE_EVERYTHING = false;
 
 
 
@@ -147,9 +147,9 @@ int main(int argc, char**argv){
 
 		Centers_From_KeyPoints corrispondenze;
 
-		corrispondenze = trovaCentri(model_1, keypoints_from_filtered_matches, filtered_match_1, keypoints_model_1, keypoints_scene, scene);
+		corrispondenze = get_Centers(model_1, keypoints_from_filtered_matches, filtered_match_1, keypoints_model_1, keypoints_scene, scene);
 		
-		std::vector<Centers_From_KeyPoints> corrispondenze_plus = DBSCAN_centers_plus(scene, corrispondenze, epsilon, minPoints);
+		std::vector<Centers_From_KeyPoints> corrispondenze_plus = DBSCAN_Centers(scene, corrispondenze, epsilon, minPoints);
 	
 		for (int i = 0; i < corrispondenze_plus.size(); i++){
 

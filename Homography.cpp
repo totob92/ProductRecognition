@@ -126,8 +126,6 @@ void MyHomography(cv::Mat model, cv::Mat scene, std::vector<cv::KeyPoint> keypoi
 	//estimate homography using ransac
 	cv::Mat homography = cv::findHomography(model_points, scene_points, CV_RANSAC);
 	std::cout << "Homography estimated" << std::endl;
-	cv::Mat bounding_box;
-	scene.copyTo(bounding_box);
 
 
 	//---------------------------------------------------------------------------------------------------------------------
@@ -141,13 +139,13 @@ void MyHomography(cv::Mat model, cv::Mat scene, std::vector<cv::KeyPoint> keypoi
 	std::vector<cv::Point2f> scene_corners(4);
 	perspectiveTransform(obj_corners, scene_corners, homography);
 	//draw the bounding box
-	cv::line(bounding_box, scene_corners[0], scene_corners[1], cv::Scalar(0, 255, 0), 6);
-	cv::line(bounding_box, scene_corners[1], scene_corners[2], cv::Scalar(0, 255, 0), 6);
-	cv::line(bounding_box, scene_corners[2], scene_corners[3], cv::Scalar(0, 255, 0), 6);
-	cv::line(bounding_box, scene_corners[3], scene_corners[0], cv::Scalar(0, 255, 0), 6);
+	cv::line(scene, scene_corners[0], scene_corners[1], cv::Scalar(0, 255, 0), 6);
+	cv::line(scene, scene_corners[1], scene_corners[2], cv::Scalar(0, 255, 0), 6);
+	cv::line(scene, scene_corners[2], scene_corners[3], cv::Scalar(0, 255, 0), 6);
+	cv::line(scene, scene_corners[3], scene_corners[0], cv::Scalar(0, 255, 0), 6);
 
 	cv::namedWindow("Bounding box", cv::WINDOW_NORMAL);
-	cv::imshow("Bounding box", bounding_box);
+	cv::imshow("Bounding box", scene);
 	cv::waitKey();
 	cv::destroyAllWindows();
 

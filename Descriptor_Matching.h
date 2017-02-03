@@ -1,6 +1,6 @@
 #include "opencv2/opencv.hpp"
 
-
+extern bool VISUALIZE_EVERYTHING;
 
 
 void Descriptor_Matching(cv::Mat model, cv::Mat scene, cv::Mat descriptor_model, cv::Mat descriptor_scene, std::vector<cv::KeyPoint> keypoints_model,

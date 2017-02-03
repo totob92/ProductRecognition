@@ -10,7 +10,7 @@ cv::Point getCenterOfImage(cv::Mat image){
 
 }
 
-cv::Point getCenterKeypoints(cv::KeyPoint keypoint_model, cv::KeyPoint keypoint_scene, cv::Point center){
+cv::Point get_Center_From_Formula(cv::KeyPoint keypoint_model, cv::KeyPoint keypoint_scene, cv::Point center){
 
 	float teta_model = keypoint_model.angle;
 	float teta_scene = keypoint_scene.angle;
@@ -37,7 +37,7 @@ cv::Point getCenterKeypoints(cv::KeyPoint keypoint_model, cv::KeyPoint keypoint_
 	return result;
 }
 
-std::vector<cv::Point> trovaBaricentri(std::vector<std::vector<cv::Point>> clusters, cv::Mat image){
+std::vector<cv::Point> get_Centroid(std::vector<std::vector<cv::Point>> clusters, cv::Mat image){
 	
 	std::vector<cv::Point> result;
 
@@ -55,15 +55,14 @@ std::vector<cv::Point> trovaBaricentri(std::vector<std::vector<cv::Point>> clust
 		cv::circle(image, cv::Point(tot_x, tot_y), 5, cv::Scalar(255, 0, 0), -1);
 
 	}
-	//cv::namedWindow("Baricentri", cv::WINDOW_NORMAL);
-	cv::imshow("Cluster", image);
-	cvWaitKey();
 	return result;
 }
 
-Centers_From_KeyPoints trovaCentri(cv::Mat model, std::vector<cv::KeyPoint> keypoints_match,
+Centers_From_KeyPoints get_Centers(cv::Mat model, std::vector<cv::KeyPoint> keypoints_match,
 	std::vector<cv::DMatch> filtered_match, std::vector<cv::KeyPoint> keypoints_model, std::vector<cv::KeyPoint> keypoints_scene, cv::Mat scene){
 
+	cv::Mat temp_image;
+	scene.copyTo(temp_image);
 	cv::Point centerofimage = getCenterOfImage(model);
 	Centers_From_KeyPoints corrispondenze;
 
@@ -72,23 +71,27 @@ Centers_From_KeyPoints trovaCentri(cv::Mat model, std::vector<cv::KeyPoint> keyp
 		int pos_keypoint_model = filtered_match.at(i).trainIdx;
 		int pos_keypoint_scene = filtered_match.at(i).queryIdx;
 
-		cv::Point centro = getCenterKeypoints(keypoints_model.at(pos_keypoint_model),keypoints_scene.at(pos_keypoint_scene), centerofimage);
+		cv::Point centro = get_Center_From_Formula(keypoints_model.at(pos_keypoint_model),keypoints_scene.at(pos_keypoint_scene), centerofimage);
 
 		Center_From_KeyPoint corr = Center_From_KeyPoint(keypoints_model.at(pos_keypoint_model),keypoints_scene.at(pos_keypoint_scene), centro);
 
 		corrispondenze.centers_from_keypoints.push_back(corr);
 
 		cv::Scalar color = cv::Scalar(0, 0, 255);
-		cv::circle(scene, centro, 2, color, -1);
+		cv::circle(temp_image, centro, 2, color, -1);
 	}
-	cv::namedWindow("Centri non clusterizzati", cv::WINDOW_NORMAL);
-	cv::imshow("Centri non clusterizzati", scene);
-	cv::waitKey();
+
+	if (VISUALIZE_EVERYTHING == true){
+		cv::namedWindow("Centri non Clusterizzati", cv::WINDOW_NORMAL);
+		cv::imshow("Centri non Clusterizzati", temp_image);
+		cv::waitKey();
+		cv::destroyAllWindows();
+	}
 
 	return corrispondenze;
 }
 
-std::vector<Centers_From_KeyPoints> DBSCAN_centers_plus(cv::Mat image, Centers_From_KeyPoints points, float eps, int minPts)
+std::vector<Centers_From_KeyPoints> DBSCAN_Centers(cv::Mat image, Centers_From_KeyPoints points, float eps, int minPts)
 {
 	std::vector<Centers_From_KeyPoints> clusters;
 	std::vector<bool> clustered;
@@ -117,7 +120,7 @@ std::vector<Centers_From_KeyPoints> DBSCAN_centers_plus(cv::Mat image, Centers_F
 		{
 			//Mark P as visited
 			visited[i] = true;
-			neighborPts = regionQueryCenter_Plus(points, points.atPosition(i), eps);
+			neighborPts = region_Query(points, points.atPosition(i), eps);
 			if (neighborPts.size() < minPts)
 				//Mark P as Noise
 				noise.push_back(i);
@@ -136,7 +139,7 @@ std::vector<Centers_From_KeyPoints> DBSCAN_centers_plus(cv::Mat image, Centers_F
 					if (!visited[neighborPts[j]])
 					{
 						//Mark P' as visited
-						neighborPts_ = regionQueryCenter_Plus(points, points.atPosition(neighborPts[j]), eps);
+						neighborPts_ = region_Query(points, points.atPosition(neighborPts[j]), eps);
 						visited[neighborPts[j]] = true;
 
 						if (neighborPts_.size() >= minPts)
@@ -154,28 +157,25 @@ std::vector<Centers_From_KeyPoints> DBSCAN_centers_plus(cv::Mat image, Centers_F
 			}
 		}
 	}
-
-	cv::Mat target_copy = image;
-	printf("Numero Cluster: %d\n", clusters.size());
 	
-	for (int i = 0; i<clusters.size(); i++){
-		Centers_From_KeyPoints cluster = clusters.at(i);
-		cv::Scalar color = cv::Scalar(100 * i, 255 / (i + 1), 255 - (i * 50));
-		printf("[Cluster:%d quantità:%d]\n", i, cluster.centers_from_keypoints.size());
-		for (int j = 0; j < cluster.centers_from_keypoints.size(); j++){
-			cv::circle(target_copy, cluster.atPosition(j).center, 2, color, -1);
+	if (VISUALIZE_EVERYTHING == true){
+		for (int i = 0; i < clusters.size(); i++){
+			Centers_From_KeyPoints cluster = clusters.at(i);
+			cv::Scalar color = cv::Scalar(100 * i, 255 / (i + 1), 255 - (i * 50));
+			for (int j = 0; j < cluster.centers_from_keypoints.size(); j++){
+				cv::circle(image, cluster.atPosition(j).center, 2, color, -1);
+			}
+			cv::namedWindow("Cluster", cv::WINDOW_NORMAL);
+			cv::imshow("Cluster", image);
+			cvWaitKey();
+			cvDestroyAllWindows();
 		}
-		cv::namedWindow("Cluster", cv::WINDOW_NORMAL);
-		cv::imshow("Cluster", target_copy);
-		//cv::imwrite("cluster0.png", target_copy);
-		cvWaitKey();
 	}
-
 
 	return clusters;
 }
 
-std::vector<int> regionQueryCenter_Plus(Centers_From_KeyPoints points, Center_From_KeyPoint point, float eps)
+std::vector<int> region_Query(Centers_From_KeyPoints points, Center_From_KeyPoint point, float eps)
 {
 	float dist;
 	std::vector<int> retKeys;
@@ -189,24 +189,3 @@ std::vector<int> regionQueryCenter_Plus(Centers_From_KeyPoints points, Center_Fr
 	}
 	return retKeys;
 }
-
-
-
-
-
-
-
-//------------------------------------------inutils
-int contaOccorenze(cv::Point p, std::vector<cv::Point> points){
-
-	int result = 0;
-	for (int i = 0; i < points.size(); i++){
-		if (p.x == points.at(i).x && p.y == points.at(i).y){
-			result++;
-		}
-	}
-	return result;
-
-}
-
-
