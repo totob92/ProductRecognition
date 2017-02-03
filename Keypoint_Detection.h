@@ -10,9 +10,7 @@ extern bool VISUALIZE_EVERYTHING;
 
 void Keypoint_Detection(cv::Mat image, cv::Ptr<cv::Feature2D> detector, std::vector<cv::KeyPoint> &keypoints_image);
 
-std::vector<std::vector<cv::KeyPoint>> DBSCAN_keypoints(cv::Mat image, std::vector<cv::KeyPoint> *keypoints, float eps, int minPts);
-
-std::vector<int> regionQuery(std::vector<cv::KeyPoint> *keypoints, cv::KeyPoint *keypoint, float eps);
+void Keypoint_Detection_Multiple(std::vector<cv::Mat> models, cv::Ptr<cv::Feature2D> detector, std::vector<std::vector<cv::KeyPoint>> &keypoints_image);
 
 
 

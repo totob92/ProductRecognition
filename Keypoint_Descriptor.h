@@ -7,3 +7,5 @@
 #endif
 
 void Keypoint_Descriptor(cv::Mat image, std::vector<cv::KeyPoint> keypoints_image, cv::Ptr<cv::Feature2D> descriptor, cv::Mat &descriptor_image);
+
+void Keypoint_Descriptor_Multiple(std::vector<cv::Mat> models, std::vector<std::vector<cv::KeyPoint>> keypoints_image, cv::Ptr<cv::Feature2D> descriptor, std::vector<cv::Mat> &descriptor_image);
