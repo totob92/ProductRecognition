@@ -4,7 +4,8 @@
 #include "Homography.h"
 #include "Utils.h"
 #include "Box.h"
-#define VISUALIZE_EVERYTHING = true; 
+#define VISUALIZE_EVERYTHING = true;
+
 
 
 
@@ -145,7 +146,7 @@ int main(int argc, char**argv){
 		std::vector<cv::KeyPoint> keypoints_from_filtered_matches;
 		Keypoints_From_Filtered_Matches(filtered_match_1, keypoints_scene, scene, keypoints_from_filtered_matches);
 
-		std::vector<Center_From_KeyPoint> corrispondenze;
+		Centers_From_KeyPoints corrispondenze;
 
 		//da rifare di nuovo dato che bisogna cambiare corrispondenze
 		corrispondenze = trovaCentri(model_1, keypoints_from_filtered_matches, filtered_match_1, keypoints_model_1, keypoints_scene, scene);
