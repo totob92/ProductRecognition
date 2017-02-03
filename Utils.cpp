@@ -91,6 +91,47 @@ Centers_From_KeyPoints get_Centers(cv::Mat model, std::vector<cv::KeyPoint> keyp
 	return corrispondenze;
 }
 
+std::vector<Centers_From_KeyPoints> get_Centers_Multiple(std::vector<cv::Mat> models, std::vector<std::vector<cv::KeyPoint>> keypoints_matches,
+	std::vector<std::vector<cv::DMatch>> filtered_matches, std::vector<std::vector<cv::KeyPoint>> keypoints_models, std::vector<cv::KeyPoint> keypoints_scene, cv::Mat scene){
+
+	std::vector<Centers_From_KeyPoints> result;
+	cv::Mat temp_image;
+	
+	for (int j = 0; j < models.size(); j++){
+		scene.copyTo(temp_image);
+		cv::Mat model = models.at(j);
+		std::vector<cv::DMatch> filtered_match = filtered_matches.at(j);
+		std::vector<cv::KeyPoint> keypoints_model = keypoints_models.at(j);
+		std::vector<cv::KeyPoint > keypoints_match = keypoints_matches.at(j);
+		cv::Point centerofimage = getCenterOfImage(model);
+		Centers_From_KeyPoints temp = Centers_From_KeyPoints();
+		for (int i = 0; i < keypoints_match.size(); i++){
+
+			int pos_keypoint_model = filtered_match.at(i).trainIdx;
+			int pos_keypoint_scene = filtered_match.at(i).queryIdx;
+
+			cv::Point centro = get_Center_From_Formula(keypoints_model.at(pos_keypoint_model), keypoints_scene.at(pos_keypoint_scene), centerofimage);
+
+			Center_From_KeyPoint corr = Center_From_KeyPoint(keypoints_model.at(pos_keypoint_model), keypoints_scene.at(pos_keypoint_scene), centro);
+
+			temp.centers_from_keypoints.push_back(corr);
+
+			cv::Scalar color = cv::Scalar(0, 0, 255);
+			cv::circle(temp_image, centro, 2, color, -1);
+		}
+
+		result.push_back(temp);
+		if (VISUALIZE_EVERYTHING == true){
+			cv::namedWindow("Centri non Clusterizzati", cv::WINDOW_NORMAL);
+			cv::imshow("Centri non Clusterizzati", temp_image);
+			cv::waitKey();
+			cv::destroyAllWindows();
+		}
+	}
+
+	return result;
+}
+
 std::vector<Centers_From_KeyPoints> DBSCAN_Centers(cv::Mat image, Centers_From_KeyPoints points, float eps, int minPts)
 {
 	std::vector<Centers_From_KeyPoints> clusters;

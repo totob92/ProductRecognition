@@ -105,11 +105,10 @@ int main(int argc, char**argv){
 
 	Keypoints_From_Filtered_Matches_Multiple(filtered_matches, keypoints_scene, scene, keypoints_from_filtered_matches);
 
-	/*
-	Centers_From_KeyPoints corrispondenze;
+	std::vector<Centers_From_KeyPoints> corrispondenze;
 
-	corrispondenze = get_Centers(model_1, keypoints_from_filtered_matches, filtered_match_1, keypoints_model_1, keypoints_scene, scene);
-		
+	corrispondenze = get_Centers_Multiple(models, keypoints_from_filtered_matches, filtered_matches, keyPoint_models, keypoints_scene, scene);
+	/*
 	std::vector<Centers_From_KeyPoints> corrispondenze_plus = DBSCAN_Centers(scene, corrispondenze, epsilon, minPoints);
 	
 	for (int i = 0; i < corrispondenze_plus.size(); i++){

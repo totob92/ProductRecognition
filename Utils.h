@@ -13,6 +13,9 @@ std::vector<cv::Point> get_Centroid(std::vector<std::vector<cv::Point>> clusters
 Centers_From_KeyPoints get_Centers(cv::Mat model_1, std::vector<cv::KeyPoint> keypoints_match,
 	std::vector<cv::DMatch> filtered_match_1, std::vector<cv::KeyPoint> keypoints_model_1, std::vector<cv::KeyPoint> keypoints_scene, cv::Mat scene);
 
+std::vector<Centers_From_KeyPoints> get_Centers_Multiple(std::vector<cv::Mat> models, std::vector<std::vector<cv::KeyPoint>> keypoints_matches,
+	std::vector<std::vector<cv::DMatch>> filtered_matches, std::vector<std::vector<cv::KeyPoint>> keypoints_models, std::vector<cv::KeyPoint> keypoints_scene, cv::Mat scene);
+
 
 std::vector<Centers_From_KeyPoints> DBSCAN_Centers(cv::Mat image, Centers_From_KeyPoints points, float eps, int minPts);
 
