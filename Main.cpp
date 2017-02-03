@@ -145,13 +145,13 @@ int main(int argc, char**argv){
 		std::vector<cv::KeyPoint> keypoints_from_filtered_matches;
 		Keypoints_From_Filtered_Matches(filtered_match_1, keypoints_scene, scene, keypoints_from_filtered_matches);
 
-		Centers_From_Keypoints corrispondenze = Centers_From_Keypoints();
+		std::vector<KeyPoint_Center> corrispondenze;
 
 		//da rifare di nuovo dato che bisogna cambiare corrispondenze
 		corrispondenze = trovaCentri(model_1, keypoints_from_filtered_matches, filtered_match_1, keypoints_model_1, keypoints_scene, scene);
 		
 		//restituira un vettore di kepointcnter che avrà gia 3 vettori dentro
-		std::vector<Centers_From_Keypoints> corrispondenze_plus = DBSCAN_centers_plus(scene, corrispondenze, epsilon, minPoints);
+		std::vector<std::vector<KeyPoint_Center>> corrispondenze_plus = DBSCAN_centers_plus(scene, corrispondenze, epsilon, minPoints);
 		
 		//da inglobare dentro homografi
 		std::vector<cv::Point2d> point_I_model, point_I_scene;

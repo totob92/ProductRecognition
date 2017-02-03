@@ -61,23 +61,21 @@ std::vector<cv::Point> trovaBaricentri(std::vector<std::vector<cv::Point>> clust
 	return result;
 }
 
-std::vector<KeyPoint_Center> trovaCentri(cv::Mat model_1, std::vector<cv::KeyPoint> keypoints_match,
-	std::vector<cv::DMatch> filtered_match_1, std::vector<cv::KeyPoint> keypoints_model_1, std::vector<cv::KeyPoint> keypoints_scene, cv::Mat scene, std::vector<cv::Point> *centri){
+std::vector<KeyPoint_Center> trovaCentri(cv::Mat model, std::vector<cv::KeyPoint> keypoints_match,
+	std::vector<cv::DMatch> filtered_match, std::vector<cv::KeyPoint> keypoints_model, std::vector<cv::KeyPoint> keypoints_scene, cv::Mat scene){
 
-	cv::Point centerofimage = getCenterOfImage(model_1);
+	cv::Point centerofimage = getCenterOfImage(model);
 	std::vector<KeyPoint_Center> corrispondenze;
 
 	for (int i = 0; i < keypoints_match.size(); i++){
 
-		int pos_keypoint_model = filtered_match_1.at(i).trainIdx;
-		int pos_keypoint_scene = filtered_match_1.at(i).queryIdx;
-		cv::Point centro = getCenterKeypoints(keypoints_model_1.at(pos_keypoint_model),
+		int pos_keypoint_model = filtered_match.at(i).trainIdx;
+		int pos_keypoint_scene = filtered_match.at(i).queryIdx;
+		cv::Point centro = getCenterKeypoints(keypoints_model.at(pos_keypoint_model),
 			keypoints_scene.at(pos_keypoint_scene), centerofimage);
 		cv::KeyPoint temp = keypoints_scene.at(pos_keypoint_scene);
-		centri->push_back(centro);
 
-		KeyPoint_Center corr = KeyPoint_Center(keypoints_scene.at(pos_keypoint_scene),
-			keypoints_model_1.at(pos_keypoint_model), centro);
+		KeyPoint_Center corr = KeyPoint_Center(keypoints_model.at(pos_keypoint_model), keypoints_scene.at(pos_keypoint_scene), centro);
 		corrispondenze.push_back(corr);
 
 		cv::Scalar color = cv::Scalar(0, 0, 255);
