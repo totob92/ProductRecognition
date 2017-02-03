@@ -141,25 +141,69 @@ int main(int argc, char**argv){
 //-------------------------TASK B--------------------------------------------------
 
 		//ottengo i keypoint che fanno match
-		std::vector<cv::KeyPoint> keypoints_match;
-		Keypoint_Matching_On_Scene(filtered_match_1, keypoints_scene, scene, keypoints_match);
+		//**************************serve
+		std::vector<cv::KeyPoint> keypoints_from_filtered_matches;
+		Keypoints_From_Filtered_Matches(filtered_match_1, keypoints_scene, scene, keypoints_from_filtered_matches);
 
-		cv::Mat tempmodel = model_1;
-		cv::Point centerofimage = getCenterOfImage(model_1);
-		cv::circle(tempmodel, centerofimage, 2, cv::Scalar(0, 255, 0), -1);
-		cv::namedWindow("Centro del modello");
-		cv::imshow("Centro del modello", tempmodel);
-		cv::waitKey();
+		Centers_From_Keypoints corrispondenze = Centers_From_Keypoints();
 
-		std::vector<cv::Point> centri;
-		std::vector<KeyPoint_Center> corrispondenze;
+		//da rifare di nuovo dato che bisogna cambiare corrispondenze
+		corrispondenze = trovaCentri(model_1, keypoints_from_filtered_matches, filtered_match_1, keypoints_model_1, keypoints_scene, scene);
+		
+		//restituira un vettore di kepointcnter che avrà gia 3 vettori dentro
+		std::vector<Centers_From_Keypoints> corrispondenze_plus = DBSCAN_centers_plus(scene, corrispondenze, epsilon, minPoints);
+		
+		//da inglobare dentro homografi
+		std::vector<cv::Point2d> point_I_model, point_I_scene;
+		std::vector<cv::KeyPoint> keypoint_I_model, keypoint_I_scene;
 
-		corrispondenze = trovaCentri(model_1, keypoints_match, filtered_match_1, keypoints_model_1, keypoints_scene, scene, &centri);
-		
-		std::vector<std::vector<cv::Point>> clusters_centri = DBSCAN_centers(scene, &centri, epsilon, minPoints);
-		
-		std::vector<std::vector<KeyPoint_Center>> corrispondenze_plus = DBSCAN_centers_plus(scene, corrispondenze, epsilon, minPoints);
-		
+		for (int i = 0; i < corrispondenze_plus.size(); i++){
+			cv::Mat imageTemp = scene;
+			std::vector<KeyPoint_Center > corrispondenza_I = corrispondenze_plus.at(i);
+			for (int j = 0; j < corrispondenza_I.size(); j++){
+				keypoint_I_model.push_back(corrispondenza_I.at(j).KeyPointModel);
+				keypoint_I_scene.push_back(corrispondenza_I.at(j).keyPointScene);
+				point_I_model.push_back(corrispondenza_I.at(j).KeyPointModel.pt);
+				point_I_scene.push_back(corrispondenza_I.at(j).keyPointScene.pt);
+			}
+			cv::drawKeypoints(scene, keypoint_I_scene, imageTemp, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+			cv::namedWindow("KeyPoints Cluster", cv::WINDOW_NORMAL);
+			cv::imshow("KeyPoints Cluster", imageTemp);
+			cv::waitKey();
+			cv::Mat homography = cv::findHomography(point_I_model, point_I_scene, CV_RANSAC);
+			std::cout << "Homography estimated" << std::endl;
+			cv::Mat bounding_box;
+			scene.copyTo(bounding_box);
+
+
+			//---------------------------------------------------------------------------------------------------------------------
+
+			//compute scene bounding box corner using the homography computed right now
+			std::vector<cv::Point2f> obj_corners(4);
+			obj_corners[0] = cv::Point(0, 0);
+			obj_corners[1] = cv::Point(model_1.cols, 0);
+			obj_corners[2] = cv::Point(model_1.cols, model_1.rows);
+			obj_corners[3] = cv::Point(0, model_1.rows);
+			std::vector<cv::Point2f> scene_corners(4);
+			perspectiveTransform(obj_corners, scene_corners, homography);
+			//draw the bounding box
+			cv::line(bounding_box, scene_corners[0], scene_corners[1], cv::Scalar(0, 255, 0), 6);
+			cv::line(bounding_box, scene_corners[1], scene_corners[2], cv::Scalar(0, 255, 0), 6);
+			cv::line(bounding_box, scene_corners[2], scene_corners[3], cv::Scalar(0, 255, 0), 6);
+			cv::line(bounding_box, scene_corners[3], scene_corners[0], cv::Scalar(0, 255, 0), 6);
+
+			cv::namedWindow("Bounding box", cv::WINDOW_NORMAL);
+			cv::imshow("Bounding box", bounding_box);
+			cv::waitKey();
+			
+			keypoint_I_model.clear();
+			keypoint_I_scene.clear();
+			point_I_model.clear();
+			point_I_scene.clear();
+			cv::destroyAllWindows();
+
+		}
+		/*
 		std::vector<cv::Point> baricentri = trovaBaricentri(clusters_centri, scene);
 
 		//disegno rettangolo
@@ -189,23 +233,23 @@ int main(int argc, char**argv){
 			float x_primo_0 = point0.x*cos(rotazione_tot*PI/180) - point0.y*sin(rotazione_tot*PI / 180);
 			float y_primo_0 = point0.y*cos(rotazione_tot*PI / 180) + point0.x*sin(rotazione_tot*PI / 180);
 			point0.x = x_primo_0; point0.y = y_primo_0;
-			*/
+			*//*
 			cv::Point point1 = cv::Point(baricentri.at(i).x + width*scale_tot, baricentri.at(i).y - hight*scale_tot);
 
 			/*float x_primo_1 = point1.x*cos(rotazione_tot*PI / 180) - point1.y*sin(rotazione_tot*PI / 180);
 			float y_primo_1 = point1.y*cos(rotazione_tot*PI / 180) + point1.x*sin(rotazione_tot*PI / 180);
 			point1.x = x_primo_1; point1.y = y_primo_1;*/
-
+			/*
 			cv::Point point2 = cv::Point(baricentri.at(i).x - width*scale_tot, baricentri.at(i).y + hight*scale_tot);
 			/*float x_primo_2 = point2.x*cos(rotazione_tot*PI / 180) - point2.y*sin(rotazione_tot*PI / 180);
 			float y_primo_2 = point2.y*cos(rotazione_tot*PI / 180) + point2.x*sin(rotazione_tot*PI / 180);
 			point2.x = x_primo_2; point2.y = y_primo_2;*/
-
+		/*
 			cv::Point point3 = cv::Point(baricentri.at(i).x + width*scale_tot, baricentri.at(i).y + hight*scale_tot);
 			/*	float x_primo_3 = point3.x*cos(rotazione_tot*PI / 180) - point3.y*sin(rotazione_tot*PI / 180);
 			float y_primo_3 = point3.y*cos(rotazione_tot*PI / 180) + point3.x*sin(rotazione_tot*PI / 180);
 			point3.x = x_primo_3; point3.y = y_primo_3;*/
-
+		/*
 			Box box = Box(point0, point1, point3, point2);
 			box.drawYourself(scene, cv::Scalar(0, 255, 0), 6);
 			//cv::namedWindow("Box speriamo", cv::WINDOW_NORMAL);
@@ -213,9 +257,10 @@ int main(int argc, char**argv){
 			cvWaitKey();
 			scale_tot = 0;
 			rotazione_tot = 0;
-		}
+			
+		}*/
 		//cv::imwrite("box.png", scene);
-
+		
 
 
 

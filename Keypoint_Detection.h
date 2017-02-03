@@ -14,11 +14,3 @@ std::vector<int> regionQuery(std::vector<cv::KeyPoint> *keypoints, cv::KeyPoint 
 
 
 
-
-
-std::vector<std::vector<cv::Point>> DBSCAN_centers(cv::Mat image, std::vector<cv::Point> *points, float eps, int minPts);
-
-std::vector<int> regionQueryCenter(std::vector<cv::Point> *points, cv::Point *point, float eps);
-
-
-
