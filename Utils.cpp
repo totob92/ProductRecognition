@@ -88,9 +88,9 @@ Centers_From_KeyPoints trovaCentri(cv::Mat model, std::vector<cv::KeyPoint> keyp
 	return corrispondenze;
 }
 
-std::vector<std::vector<Center_From_KeyPoint>> DBSCAN_centers_plus(cv::Mat image, std::vector<Center_From_KeyPoint> points, float eps, int minPts)
+std::vector<Centers_From_KeyPoints> DBSCAN_centers_plus(cv::Mat image, Centers_From_KeyPoints points, float eps, int minPts)
 {
-	std::vector<std::vector<Center_From_KeyPoint>> clusters;
+	std::vector<Centers_From_KeyPoints> clusters;
 	std::vector<bool> clustered;
 	std::vector<int> noise;
 	std::vector<bool> visited;
@@ -98,7 +98,7 @@ std::vector<std::vector<Center_From_KeyPoint>> DBSCAN_centers_plus(cv::Mat image
 	std::vector<int> neighborPts_;
 	int c;
 
-	int noKeys = points.size();
+	int noKeys = points.centers_from_keypoints.size();
 
 	//init clustered and visited
 	for (int k = 0; k < noKeys; k++)
@@ -117,18 +117,18 @@ std::vector<std::vector<Center_From_KeyPoint>> DBSCAN_centers_plus(cv::Mat image
 		{
 			//Mark P as visited
 			visited[i] = true;
-			neighborPts = regionQueryCenter_Plus(points, points.at(i), eps);
+			neighborPts = regionQueryCenter_Plus(points, points.atPosition(i), eps);
 			if (neighborPts.size() < minPts)
 				//Mark P as Noise
 				noise.push_back(i);
 			else
 			{
 
-				clusters.push_back(std::vector<Center_From_KeyPoint>());
+				clusters.push_back(Centers_From_KeyPoints());
 				//expand cluster
 				// add P to cluster c
 				clustered[i] = true;
-				clusters[c].push_back(points.at(i));
+				clusters[c].insertIn(points.atPosition(i));
 				//for each point P' in neighborPts
 				for (int j = 0; j < neighborPts.size(); j++)
 				{
@@ -136,7 +136,7 @@ std::vector<std::vector<Center_From_KeyPoint>> DBSCAN_centers_plus(cv::Mat image
 					if (!visited[neighborPts[j]])
 					{
 						//Mark P' as visited
-						neighborPts_ = regionQueryCenter_Plus(points, points.at(neighborPts[j]), eps);
+						neighborPts_ = regionQueryCenter_Plus(points, points.atPosition(neighborPts[j]), eps);
 						visited[neighborPts[j]] = true;
 
 						if (neighborPts_.size() >= minPts)
@@ -147,7 +147,7 @@ std::vector<std::vector<Center_From_KeyPoint>> DBSCAN_centers_plus(cv::Mat image
 					// if P' is not yet a member of any cluster
 					// add P' to cluster c
 					if (!clustered[neighborPts[j]])
-						clusters[c].push_back(points.at(neighborPts[j]));
+						clusters[c].insertIn(points.atPosition(neighborPts[j]));
 					clustered[neighborPts[j]] = true;
 				}
 				c++;
@@ -159,11 +159,11 @@ std::vector<std::vector<Center_From_KeyPoint>> DBSCAN_centers_plus(cv::Mat image
 	printf("Numero Cluster: %d\n", clusters.size());
 	
 	for (int i = 0; i<clusters.size(); i++){
-		std::vector<Center_From_KeyPoint> cluster = clusters.at(i);
+		Centers_From_KeyPoints cluster = clusters.at(i);
 		cv::Scalar color = cv::Scalar(100 * i, 255 / (i + 1), 255 - (i * 50));
-		printf("[Cluster:%d quantità:%d]\n", i, cluster.size());
-		for (int j = 0; j < cluster.size(); j++){
-			cv::circle(target_copy, cluster.at(j).center, 2, color, -1);
+		printf("[Cluster:%d quantità:%d]\n", i, cluster.centers_from_keypoints.size());
+		for (int j = 0; j < cluster.centers_from_keypoints.size(); j++){
+			cv::circle(target_copy, cluster.atPosition(j).center, 2, color, -1);
 		}
 		cv::namedWindow("Cluster", cv::WINDOW_NORMAL);
 		cv::imshow("Cluster", target_copy);
@@ -175,13 +175,13 @@ std::vector<std::vector<Center_From_KeyPoint>> DBSCAN_centers_plus(cv::Mat image
 	return clusters;
 }
 
-std::vector<int> regionQueryCenter_Plus(std::vector<Center_From_KeyPoint> points, Center_From_KeyPoint point, float eps)
+std::vector<int> regionQueryCenter_Plus(Centers_From_KeyPoints points, Center_From_KeyPoint point, float eps)
 {
 	float dist;
 	std::vector<int> retKeys;
-	for (int i = 0; i< points.size(); i++)
+	for (int i = 0; i< points.centers_from_keypoints.size(); i++)
 	{
-		dist = sqrt(pow((point.center.x - points.at(i).center.x), 2) + pow((point.center.y - points.at(i).center.y), 2));
+		dist = sqrt(pow((point.center.x - points.atPosition(i).center.x), 2) + pow((point.center.y - points.atPosition(i).center.y), 2));
 		if (dist <= eps && dist != 0.0f)
 		{
 			retKeys.push_back(i);

@@ -12,9 +12,9 @@ Centers_From_KeyPoints trovaCentri(cv::Mat model_1, std::vector<cv::KeyPoint> ke
 	std::vector<cv::DMatch> filtered_match_1, std::vector<cv::KeyPoint> keypoints_model_1, std::vector<cv::KeyPoint> keypoints_scene, cv::Mat scene);
 
 
-std::vector<std::vector<Center_From_KeyPoint>> DBSCAN_centers_plus(cv::Mat image, std::vector<Center_From_KeyPoint> points, float eps, int minPts);
+std::vector<Centers_From_KeyPoints> DBSCAN_centers_plus(cv::Mat image, Centers_From_KeyPoints points, float eps, int minPts);
 
-std::vector<int> regionQueryCenter_Plus(std::vector<Center_From_KeyPoint> points, Center_From_KeyPoint point, float eps);
+std::vector<int> regionQueryCenter_Plus(Centers_From_KeyPoints points, Center_From_KeyPoint point, float eps);
 
 
 
