@@ -127,18 +127,28 @@ void MyHomography(cv::Mat model, cv::Mat scene, std::vector<cv::KeyPoint> keypoi
 	std::cout << "Homography estimated" << std::endl;
 
 	//compute scene bounding box corner using the homography computed right now
-	std::vector<cv::Point2f> obj_corners(4);
-	obj_corners[0] = cv::Point(0, 0);
-	obj_corners[1] = cv::Point(model.cols, 0);
-	obj_corners[2] = cv::Point(model.cols, model.rows);
-	obj_corners[3] = cv::Point(0, model.rows);
-	std::vector<cv::Point2f> scene_corners(4);
-	perspectiveTransform(obj_corners, scene_corners, homography);
-	//draw the bounding box
-	cv::line(scene, scene_corners[0], scene_corners[1], cv::Scalar(0, 255, 0), 6);
-	cv::line(scene, scene_corners[1], scene_corners[2], cv::Scalar(0, 255, 0), 6);
-	cv::line(scene, scene_corners[2], scene_corners[3], cv::Scalar(0, 255, 0), 6);
-	cv::line(scene, scene_corners[3], scene_corners[0], cv::Scalar(0, 255, 0), 6);
+	Box box;
+	box.point0 = cv::Point(0, 0);
+	box.point1 = cv::Point(model.cols, 0);
+	box.point2 = cv::Point(model.cols, model.rows);
+	box.point3 = cv::Point(0, model.rows);
+
+	std::vector<cv::Point2f> result(4);
+	result[0] = (box.point0);
+	result[1] = (box.point1);
+	result[2] = (box.point2);
+	result[3] = (box.point3);
+
+	std::vector<cv::Point2f> box_scene_corners_result(4);
+
+	perspectiveTransform(result, box_scene_corners_result, homography);
+
+	box.point0 = box_scene_corners_result[0];
+	box.point1 = box_scene_corners_result[1];
+	box.point2 = box_scene_corners_result[2];
+	box.point3 = box_scene_corners_result[3];
+
+	box.drawYourself(scene, cv::Scalar(255, 255, 0),6);
 
 	cv::namedWindow("Bounding box", cv::WINDOW_NORMAL);
 	cv::imshow("Bounding box", scene);
@@ -154,6 +164,7 @@ void MultiMyHomography(std::vector<cv::Mat> models, cv::Mat scene, std::vector<s
 	
 	for (int i = 0; i < models.size(); i++){
 		std::vector<Centers_From_KeyPoints> corrispondenzeTemp = corrispondenze_plus.at(i);
+
 		for (int j = 0; j < corrispondenzeTemp.size(); j++){
 			MyHomography(models.at(i), scene, corrispondenzeTemp.at(j).get_Vector_Key_Point_Model(),
 				corrispondenzeTemp.at(j).get_Vector_Key_Point_Scene());

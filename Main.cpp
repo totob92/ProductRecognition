@@ -95,7 +95,7 @@ int main(int argc, char**argv){
 
 
 //-------------------------TASK B--------------------------------------------------
-
+	
 	std::vector<Centers_From_KeyPoints> corrispondenze;
 
 	corrispondenze = get_Centers_Multiple(models, filtered_matches, keyPoint_models, keypoints_scene, scene);
@@ -103,6 +103,6 @@ int main(int argc, char**argv){
 	std::vector<std::vector<Centers_From_KeyPoints>> corrispondenze_plus = DBSCAN_Centers_Multiple(scene, corrispondenze, epsilon, minPoints);
 	
 	MultiMyHomography(models, scene, corrispondenze_plus);
+	
 
-	system("PAUSE");
 }
