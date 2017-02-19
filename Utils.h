@@ -18,4 +18,6 @@ std::vector<Centers_From_KeyPoints> get_Centers_Multiple(std::vector<cv::Mat> mo
 
 std::vector<Centers_From_KeyPoints> DBSCAN_Centers(cv::Mat image, Centers_From_KeyPoints points, float eps, int minPts);
 
+std::vector<std::vector<Centers_From_KeyPoints>> DBSCAN_Centers_Multiple(cv::Mat image, std::vector<Centers_From_KeyPoints> points, float eps, int minPts);
+
 std::vector<int> region_Query(Centers_From_KeyPoints points, Center_From_KeyPoint point, float eps);

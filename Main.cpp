@@ -2,9 +2,8 @@
 #include "Keypoint_Descriptor.h"
 #include "Descriptor_Matching.h"
 #include "Homography.h"
-#include "Utils.h"
 #include "Box.h"
-extern bool VISUALIZE_EVERYTHING = true;
+extern bool VISUALIZE_EVERYTHING = false;
 
 
 
@@ -16,10 +15,10 @@ int main(int argc, char**argv){
 	cv::initModule_nonfree();
 #endif
 
-	cv::Mat model_1 = cv::imread("../models/0.jpg");
-	cv::Mat model_2 = cv::imread("../models/1.jpg");
-	cv::Mat model_3 = cv::imread("../models/11.jpg");
-	cv::Mat scene = cv::imread("../scenes/e3.png");
+	cv::Mat model_1 = cv::imread("../models/25.jpg");
+	cv::Mat model_2 = cv::imread("../models/19.jpg");
+	cv::Mat model_3 = cv::imread("../models/26.jpg");
+	cv::Mat scene = cv::imread("../scenes/m3.png");
 
 	int max_keypoint = 1000;
 	int epsilon = 100;
@@ -100,15 +99,10 @@ int main(int argc, char**argv){
 	std::vector<Centers_From_KeyPoints> corrispondenze;
 
 	corrispondenze = get_Centers_Multiple(models, filtered_matches, keyPoint_models, keypoints_scene, scene);
-	/*
-	std::vector<Centers_From_KeyPoints> corrispondenze_plus = DBSCAN_Centers(scene, corrispondenze, epsilon, minPoints);
 	
-	for (int i = 0; i < corrispondenze_plus.size(); i++){
+	std::vector<std::vector<Centers_From_KeyPoints>> corrispondenze_plus = DBSCAN_Centers_Multiple(scene, corrispondenze, epsilon, minPoints);
+	
+	MultiMyHomography(models, scene, corrispondenze_plus);
 
-		MyHomography(model_1, scene, corrispondenze_plus.at(i).get_Vector_Key_Point_Model(),
-			corrispondenze_plus.at(i).get_Vector_Key_Point_Scene());
-
-	}
-	*/
-
+	system("PAUSE");
 }

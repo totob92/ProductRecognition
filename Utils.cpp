@@ -198,20 +198,21 @@ std::vector<Centers_From_KeyPoints> DBSCAN_Centers(cv::Mat image, Centers_From_K
 			}
 		}
 	}
-	
-	if (VISUALIZE_EVERYTHING == true){
+	cv::Mat temp_image;
+	image.copyTo(temp_image);
+	//if (VISUALIZE_EVERYTHING == true){
 		for (int i = 0; i < clusters.size(); i++){
 			Centers_From_KeyPoints cluster = clusters.at(i);
 			cv::Scalar color = cv::Scalar(100 * i, 255 / (i + 1), 255 - (i * 50));
 			for (int j = 0; j < cluster.centers_from_keypoints.size(); j++){
-				cv::circle(image, cluster.atPosition(j).center, 2, color, -1);
+				cv::circle(temp_image, cluster.atPosition(j).center, 2, color, -1);
 			}
 			cv::namedWindow("Cluster", cv::WINDOW_NORMAL);
-			cv::imshow("Cluster", image);
+			cv::imshow("Cluster", temp_image);
 			cvWaitKey();
 			cvDestroyAllWindows();
 		}
-	}
+	//}
 
 	return clusters;
 }
@@ -229,4 +230,16 @@ std::vector<int> region_Query(Centers_From_KeyPoints points, Center_From_KeyPoin
 		}
 	}
 	return retKeys;
+}
+
+std::vector<std::vector<Centers_From_KeyPoints>> DBSCAN_Centers_Multiple(cv::Mat image, std::vector<Centers_From_KeyPoints> points, float eps, int minPts)
+{
+	std::vector<std::vector<Centers_From_KeyPoints>> result;
+	printf("%d\n", points.size());
+	for (int i = 0; i < points.size(); i++){
+		printf("%d\n", i);
+		result.push_back(DBSCAN_Centers(image, points.at(i), eps, minPts));
+	}
+
+	return result;
 }

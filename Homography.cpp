@@ -76,7 +76,6 @@ void Multi_Homography(cv::Mat scene, std::vector<cv::KeyPoint> keypoints_scene, 
 		scene_points.clear();
 
 
-		//compute scene bounding box corner using the homography computed right now
 		
 		box_obj_corners[i].point0 = cv::Point(0, 0);
 		box_obj_corners[i].point1 = cv::Point(current_model.cols, 0);
@@ -127,9 +126,6 @@ void MyHomography(cv::Mat model, cv::Mat scene, std::vector<cv::KeyPoint> keypoi
 	cv::Mat homography = cv::findHomography(model_points, scene_points, CV_RANSAC);
 	std::cout << "Homography estimated" << std::endl;
 
-
-	//---------------------------------------------------------------------------------------------------------------------
-
 	//compute scene bounding box corner using the homography computed right now
 	std::vector<cv::Point2f> obj_corners(4);
 	obj_corners[0] = cv::Point(0, 0);
@@ -152,3 +148,18 @@ void MyHomography(cv::Mat model, cv::Mat scene, std::vector<cv::KeyPoint> keypoi
 
 	//---------------------------------------------------------------------------------------------------------------------
 }
+
+void MultiMyHomography(std::vector<cv::Mat> models, cv::Mat scene, std::vector<std::vector<Centers_From_KeyPoints>> corrispondenze_plus){
+
+	
+	for (int i = 0; i < models.size(); i++){
+		std::vector<Centers_From_KeyPoints> corrispondenzeTemp = corrispondenze_plus.at(i);
+		for (int j = 0; j < corrispondenzeTemp.size(); j++){
+			MyHomography(models.at(i), scene, corrispondenzeTemp.at(j).get_Vector_Key_Point_Model(),
+				corrispondenzeTemp.at(j).get_Vector_Key_Point_Scene());
+		}
+	}
+
+
+}
+
