@@ -91,7 +91,7 @@ Centers_From_KeyPoints get_Centers(cv::Mat model, std::vector<cv::KeyPoint> keyp
 	return corrispondenze;
 }
 
-std::vector<Centers_From_KeyPoints> get_Centers_Multiple(std::vector<cv::Mat> models, std::vector<std::vector<cv::KeyPoint>> keypoints_matches,
+std::vector<Centers_From_KeyPoints> get_Centers_Multiple(std::vector<cv::Mat> models,
 	std::vector<std::vector<cv::DMatch>> filtered_matches, std::vector<std::vector<cv::KeyPoint>> keypoints_models, std::vector<cv::KeyPoint> keypoints_scene, cv::Mat scene){
 
 	std::vector<Centers_From_KeyPoints> result;
@@ -102,10 +102,10 @@ std::vector<Centers_From_KeyPoints> get_Centers_Multiple(std::vector<cv::Mat> mo
 		cv::Mat model = models.at(j);
 		std::vector<cv::DMatch> filtered_match = filtered_matches.at(j);
 		std::vector<cv::KeyPoint> keypoints_model = keypoints_models.at(j);
-		std::vector<cv::KeyPoint > keypoints_match = keypoints_matches.at(j);
 		cv::Point centerofimage = getCenterOfImage(model);
 		Centers_From_KeyPoints temp = Centers_From_KeyPoints();
-		for (int i = 0; i < keypoints_match.size(); i++){
+
+		for (int i = 0; i < filtered_match.size(); i++){
 
 			int pos_keypoint_model = filtered_match.at(i).trainIdx;
 			int pos_keypoint_scene = filtered_match.at(i).queryIdx;

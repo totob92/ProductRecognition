@@ -4,7 +4,7 @@
 #include "Homography.h"
 #include "Utils.h"
 #include "Box.h"
-extern bool VISUALIZE_EVERYTHING = false;
+extern bool VISUALIZE_EVERYTHING = true;
 
 
 
@@ -97,17 +97,9 @@ int main(int argc, char**argv){
 
 //-------------------------TASK B--------------------------------------------------
 
-	std::vector<cv::KeyPoint> keypoints_from_filtered_matches_1, keypoints_from_filtered_matches_2, keypoints_from_filtered_matches_3;
-	std::vector<std::vector<cv::KeyPoint>> keypoints_from_filtered_matches;
-	keypoints_from_filtered_matches.push_back(keypoints_from_filtered_matches_1);
-	keypoints_from_filtered_matches.push_back(keypoints_from_filtered_matches_2);
-	keypoints_from_filtered_matches.push_back(keypoints_from_filtered_matches_3);
-
-	Keypoints_From_Filtered_Matches_Multiple(filtered_matches, keypoints_scene, scene, keypoints_from_filtered_matches);
-
 	std::vector<Centers_From_KeyPoints> corrispondenze;
 
-	corrispondenze = get_Centers_Multiple(models, keypoints_from_filtered_matches, filtered_matches, keyPoint_models, keypoints_scene, scene);
+	corrispondenze = get_Centers_Multiple(models, filtered_matches, keyPoint_models, keypoints_scene, scene);
 	/*
 	std::vector<Centers_From_KeyPoints> corrispondenze_plus = DBSCAN_Centers(scene, corrispondenze, epsilon, minPoints);
 	
