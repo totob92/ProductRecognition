@@ -14,15 +14,27 @@ int main(int argc, char**argv){
 #if (defined(CV_VERSION_EPOCH) && CV_VERSION_EPOCH == 2)
 	cv::initModule_nonfree();
 #endif
+	/*
+	task c
 
-	cv::Mat model_1 = cv::imread("../models/25.jpg");
-	cv::Mat model_2 = cv::imread("../models/19.jpg");
+	cv::Mat model_1 = cv::imread("../models/3.jpg");
+	cv::Mat model_2 = cv::imread("../models/11.jpg");
 	cv::Mat model_3 = cv::imread("../models/26.jpg");
-	cv::Mat scene = cv::imread("../scenes/m3.png");
+	cv::Mat scene = cv::imread("../scenes/h2.jpg");
 
 	int max_keypoint = 1000;
-	int epsilon = 100;
-	int minPoints = 165;
+	int epsilon = 10; //100
+	int minPoints = 15; //160
+	*/
+
+	cv::Mat model_1 = cv::imread("../models/3.jpg");
+	cv::Mat model_2 = cv::imread("../models/11.jpg");
+	cv::Mat model_3 = cv::imread("../models/26.jpg");
+	cv::Mat scene = cv::imread("../scenes/h2.jpg");
+
+	int max_keypoint = 1000;
+	int epsilon = 10; //100
+	int minPoints = 15; //160
 
 #if (defined(CV_VERSION_EPOCH) && CV_VERSION_EPOCH == 2)
 	cv::Ptr<cv::Feature2D> detector = cv::Feature2D::create("SIFT");

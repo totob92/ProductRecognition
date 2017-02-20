@@ -82,9 +82,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Box.cpp" />
+    <ClCompile Include="Centers_From_KeyPoints.cpp" />
+    <ClCompile Include="Center_From_KeyPoint.cpp" />
     <ClCompile Include="Descriptor_Matching.cpp" />
     <ClCompile Include="Homography.cpp" />
-    <ClCompile Include="KeyPoint_Center.cpp" />
     <ClCompile Include="Keypoint_Descriptor.cpp" />
     <ClCompile Include="Keypoint_Detection.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -92,9 +93,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Box.h" />
+    <ClInclude Include="Centers_From_KeyPoints.h" />
+    <ClInclude Include="Center_From_KeyPoint.h" />
     <ClInclude Include="Descriptor_Matching.h" />
     <ClInclude Include="Homography.h" />
-    <ClInclude Include="KeyPoint_Center.h" />
     <ClInclude Include="Keypoint_Descriptor.h" />
     <ClInclude Include="Keypoint_Detection.h" />
     <ClInclude Include="Utils.h" />
