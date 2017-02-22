@@ -23,18 +23,20 @@ int main(int argc, char**argv){
 	cv::Mat scene = cv::imread("../scenes/h2.jpg");
 
 	int max_keypoint = 1000;
-	int epsilon = 10; //100
-	int minPoints = 15; //160
+	int epsilon = 10; 
+	int minPoints = 15; 
 	*/
 
-	cv::Mat model_1 = cv::imread("../models/3.jpg");
-	cv::Mat model_2 = cv::imread("../models/11.jpg");
-	cv::Mat model_3 = cv::imread("../models/26.jpg");
-	cv::Mat scene = cv::imread("../scenes/h2.jpg");
+	//task b
+
+	cv::Mat model_1 = cv::imread("../models/26.jpg");
+	cv::Mat model_2 = cv::imread("../models/25.jpg");
+	cv::Mat model_3 = cv::imread("../models/19.jpg");
+	cv::Mat scene = cv::imread("../scenes/m3.png");
 
 	int max_keypoint = 1000;
-	int epsilon = 10; //100
-	int minPoints = 15; //160
+	int epsilon = 100; 
+	int minPoints = 160; 
 
 #if (defined(CV_VERSION_EPOCH) && CV_VERSION_EPOCH == 2)
 	cv::Ptr<cv::Feature2D> detector = cv::Feature2D::create("SIFT");
@@ -114,7 +116,7 @@ int main(int argc, char**argv){
 	
 	std::vector<std::vector<Centers_From_KeyPoints>> corrispondenze_plus = DBSCAN_Centers_Multiple(scene, corrispondenze, epsilon, minPoints);
 	
-	MultiMyHomography(models, scene, corrispondenze_plus);
+	Multi_MyHomography(models, scene, corrispondenze_plus);
 	
 
 }

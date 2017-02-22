@@ -1,6 +1,6 @@
 #include "Utils.h"
 
-cv::Point getCenterOfImage(cv::Mat image){
+cv::Point get_Center_Of_Image(cv::Mat image){
 
 	cv::Point result = cvPoint(0, 0);
 	result.x = image.cols / 2;
@@ -37,33 +37,12 @@ cv::Point get_Center_From_Formula(cv::KeyPoint keypoint_model, cv::KeyPoint keyp
 	return result;
 }
 
-std::vector<cv::Point> get_Centroid(std::vector<std::vector<cv::Point>> clusters, cv::Mat image){
-	
-	std::vector<cv::Point> result;
-
-	for (int i = 0; i < clusters.size(); i++){
-		std::vector<cv::Point> cluster = clusters.at(i);
-		float tot_x = 0;
-		float tot_y = 0;
-		for (int j = 0; j < cluster.size(); j++){
-			tot_x += cluster.at(j).x;
-			tot_y += cluster.at(j).y;
-		}
-		tot_x = tot_x / cluster.size();
-		tot_y = tot_y / cluster.size();
-		result.push_back(cv::Point(tot_x, tot_y));
-		cv::circle(image, cv::Point(tot_x, tot_y), 5, cv::Scalar(255, 0, 0), -1);
-
-	}
-	return result;
-}
-
 Centers_From_KeyPoints get_Centers(cv::Mat model, std::vector<cv::KeyPoint> keypoints_match,
 	std::vector<cv::DMatch> filtered_match, std::vector<cv::KeyPoint> keypoints_model, std::vector<cv::KeyPoint> keypoints_scene, cv::Mat scene){
 
 	cv::Mat temp_image;
 	scene.copyTo(temp_image);
-	cv::Point centerofimage = getCenterOfImage(model);
+	cv::Point centerofimage = get_Center_Of_Image(model);
 	Centers_From_KeyPoints corrispondenze;
 
 	for (int i = 0; i < keypoints_match.size(); i++){
@@ -102,7 +81,7 @@ std::vector<Centers_From_KeyPoints> get_Centers_Multiple(std::vector<cv::Mat> mo
 		cv::Mat model = models.at(j);
 		std::vector<cv::DMatch> filtered_match = filtered_matches.at(j);
 		std::vector<cv::KeyPoint> keypoints_model = keypoints_models.at(j);
-		cv::Point centerofimage = getCenterOfImage(model);
+		cv::Point centerofimage = get_Center_Of_Image(model);
 		Centers_From_KeyPoints temp = Centers_From_KeyPoints();
 
 		for (int i = 0; i < filtered_match.size(); i++){
@@ -200,7 +179,7 @@ std::vector<Centers_From_KeyPoints> DBSCAN_Centers(cv::Mat image, Centers_From_K
 	}
 	cv::Mat temp_image;
 	image.copyTo(temp_image);
-	//if (VISUALIZE_EVERYTHING == true){
+	if (VISUALIZE_EVERYTHING == true){
 		for (int i = 0; i < clusters.size(); i++){
 			Centers_From_KeyPoints cluster = clusters.at(i);
 			cv::Scalar color = cv::Scalar(100 * i, 255 / (i + 1), 255 - (i * 50));
@@ -212,7 +191,7 @@ std::vector<Centers_From_KeyPoints> DBSCAN_Centers(cv::Mat image, Centers_From_K
 			cvWaitKey();
 			cvDestroyAllWindows();
 		}
-	//}
+	}
 
 	return clusters;
 }
@@ -235,9 +214,8 @@ std::vector<int> region_Query(Centers_From_KeyPoints points, Center_From_KeyPoin
 std::vector<std::vector<Centers_From_KeyPoints>> DBSCAN_Centers_Multiple(cv::Mat image, std::vector<Centers_From_KeyPoints> points, float eps, int minPts)
 {
 	std::vector<std::vector<Centers_From_KeyPoints>> result;
-	printf("%d\n", points.size());
+	
 	for (int i = 0; i < points.size(); i++){
-		printf("%d\n", i);
 		result.push_back(DBSCAN_Centers(image, points.at(i), eps, minPts));
 	}
 
