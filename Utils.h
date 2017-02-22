@@ -8,9 +8,6 @@ cv::Point get_Center_Of_Image(cv::Mat image);
 
 cv::Point get_Center_From_Formula(cv::KeyPoint keypoint_i, cv::KeyPoint keypoint_j, cv::Point center);
 
-Centers_From_KeyPoints get_Centers(cv::Mat model_1, std::vector<cv::KeyPoint> keypoints_match,
-	std::vector<cv::DMatch> filtered_match_1, std::vector<cv::KeyPoint> keypoints_model_1, std::vector<cv::KeyPoint> keypoints_scene, cv::Mat scene);
-
 std::vector<Centers_From_KeyPoints> get_Centers_Multiple(std::vector<cv::Mat> models,
 	std::vector<std::vector<cv::DMatch>> filtered_matches, std::vector<std::vector<cv::KeyPoint>> keypoints_models, std::vector<cv::KeyPoint> keypoints_scene, cv::Mat scene);
 

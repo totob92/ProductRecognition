@@ -54,12 +54,16 @@ void Multi_Homography(cv::Mat scene, std::vector<cv::KeyPoint> keypoints_scene, 
 	}
 
 	//draw the bounding box
+	MyColors mycolors = MyColors();
 	for (int i = 0; i < filtered_matches.size(); i++){
-		box_scene_corners[i].drawYourself(bounding_box, cv::Scalar(100*i, 255/(i+1), 255-(i*50)), 6);
+		int pos = i % 6;
+		box_scene_corners[i].drawYourself(bounding_box, mycolors.colors.at(pos), 6);
+		box_scene_corners[i].printBox();
 	}
 
 	cv::namedWindow("Bounding box", cv::WINDOW_NORMAL);
 	cv::imshow("Bounding box", bounding_box);
+	
 	cv::waitKey();
 	cv::destroyAllWindows();
 	

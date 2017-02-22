@@ -38,5 +38,5 @@ float Box::getWidht(){
 }
 
 void Box::printBox(){
-	printf("Widht: %2.f Height: %2.f Center: x[%2.f] y[%2.f]\n", getWidht(), getHeight(), getCenter().x, getCenter().y);
+	printf("Width: %2.f Height: %2.f Center: x[%2.f] y[%2.f]\n", getWidht(), getHeight(), getCenter().x, getCenter().y);
 }
